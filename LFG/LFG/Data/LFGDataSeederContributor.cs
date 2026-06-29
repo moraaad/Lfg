@@ -147,7 +147,7 @@ public class LFGDataSeedContributor : IDataSeedContributor, ITransientDependency
                 "M",
                 "Nero",
                 "Cotone",
-                "/images/loghi_Lfg.jpg"
+                "/images/lfg-ts-001-nero.png"
 
             ), autoSave: true);
 
