@@ -27,6 +27,7 @@ $(function () {
             telefono: $('#TelefonoFilter').val(),
             sezione: $('#SezioneFilter').val(),
             nazionalita: $('#NazionalitaFilter').val(),
+            userId: $('#UserIdFilter').val(),
         };
     };
 
@@ -78,6 +79,7 @@ $(function () {
         { data: 'telefono' },
         { data: 'sezione' },
         { data: 'nazionalita' },
+        { data: 'userId' },
     ];
 
     if (abp.auth.isGranted('LFG.Clienti.Delete')) {
@@ -290,6 +292,7 @@ $(function () {
                     { name: 'telefono', value: input.telefono },
                     { name: 'sezione', value: input.sezione },
                     { name: 'nazionalita', value: input.nazionalita },
+                    { name: 'userId', value: input.userId },
                 ]);
 
             var downloadWindow = window.open(url, '_blank');

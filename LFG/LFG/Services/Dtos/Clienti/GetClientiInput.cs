@@ -25,6 +25,8 @@ public abstract class GetClientiInputBase : PagedAndSortedResultRequestDto
 
     public string? Nazionalita { get; set; }
 
+    public Guid? UserId { get; set; }
+
     public GetClientiInputBase()
     {
     }

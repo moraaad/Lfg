@@ -28,4 +28,5 @@ public abstract class ClienteCreateDtoBase
     public string Sezione { get; set; } = null!;
     [Required(AllowEmptyStrings = true)]
     public string Nazionalita { get; set; } = null!;
+    public Guid? UserId { get; set; }
 }

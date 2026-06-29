@@ -32,6 +32,8 @@ public abstract class IndexModelBase : AbpPageModel
 
     public string? NazionalitaFilter { get; set; }
 
+    public string? UserIdFilter { get; set; }
+
     protected IClientiAppService _clientiAppService;
 
     public IndexModelBase(IClientiAppService clientiAppService)

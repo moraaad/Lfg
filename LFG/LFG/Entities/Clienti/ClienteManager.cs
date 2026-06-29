@@ -19,7 +19,7 @@ public abstract class ClienteManagerBase : DomainService
         _clienteRepository = clienteRepository;
     }
 
-    public virtual async Task<Cliente> CreateAsync(string nome, string cognome, string genere, string email, string telefono, string sezione, string nazionalita, DateTime? dataNascita = null)
+    public virtual async Task<Cliente> CreateAsync(string nome, string cognome, string genere, string email, string telefono, string sezione, string nazionalita, DateTime? dataNascita = null, Guid? userId = null)
     {
         Check.NotNullOrWhiteSpace(nome, nameof(nome));
         Check.Length(nome, nameof(nome), ClienteConsts.NomeMaxLength, ClienteConsts.NomeMinLength);
@@ -33,11 +33,11 @@ public abstract class ClienteManagerBase : DomainService
         Check.NotNullOrWhiteSpace(sezione, nameof(sezione));
         Check.Length(sezione, nameof(sezione), ClienteConsts.SezioneMaxLength, ClienteConsts.SezioneMinLength);
         Check.NotNullOrWhiteSpace(nazionalita, nameof(nazionalita));
-        var cliente = new Cliente(GuidGenerator.Create(), nome, cognome, genere, email, telefono, sezione, nazionalita, dataNascita);
+        var cliente = new Cliente(GuidGenerator.Create(), nome, cognome, genere, email, telefono, sezione, nazionalita, dataNascita, userId);
         return await _clienteRepository.InsertAsync(cliente);
     }
 
-    public virtual async Task<Cliente> UpdateAsync(Guid id, string nome, string cognome, string genere, string email, string telefono, string sezione, string nazionalita, DateTime? dataNascita = null, [CanBeNull] string? concurrencyStamp = null)
+    public virtual async Task<Cliente> UpdateAsync(Guid id, string nome, string cognome, string genere, string email, string telefono, string sezione, string nazionalita, DateTime? dataNascita = null, Guid? userId = null, [CanBeNull] string? concurrencyStamp = null)
     {
         Check.NotNullOrWhiteSpace(nome, nameof(nome));
         Check.Length(nome, nameof(nome), ClienteConsts.NomeMaxLength, ClienteConsts.NomeMinLength);
@@ -60,6 +60,7 @@ public abstract class ClienteManagerBase : DomainService
         cliente.Sezione = sezione;
         cliente.Nazionalita = nazionalita;
         cliente.DataNascita = dataNascita;
+        cliente.UserId = userId;
         cliente.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await _clienteRepository.UpdateAsync(cliente);
     }

@@ -26,6 +26,8 @@ public abstract class ClienteExcelDownloadDtoBase
 
     public string? Nazionalita { get; set; }
 
+    public Guid? UserId { get; set; }
+
     public ClienteExcelDownloadDtoBase()
     {
     }

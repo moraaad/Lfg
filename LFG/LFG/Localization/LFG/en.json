@@ -208,6 +208,7 @@
     "DataAggiunta": "Data Aggiunta",
     "MinDataAggiunta": "Min Data Aggiunta",
     "MaxDataAggiunta": "Max Data Aggiunta",
-    "Menu:ElementoListe": "Elemento Liste"
+    "Menu:ElementoListe": "Elemento Liste",
+    "UserId": "User Id"
   }
 }

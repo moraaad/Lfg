@@ -35,11 +35,13 @@ public abstract class ClienteBase : FullAuditedAggregateRoot<Guid>
     [NotNull]
     public virtual string Nazionalita { get; set; }
 
+    public virtual Guid? UserId { get; set; }
+
     protected ClienteBase()
     {
     }
 
-    public ClienteBase(Guid id, string nome, string cognome, string genere, string email, string telefono, string sezione, string nazionalita, DateTime? dataNascita = null)
+    public ClienteBase(Guid id, string nome, string cognome, string genere, string email, string telefono, string sezione, string nazionalita, DateTime? dataNascita = null, Guid? userId = null)
     {
         Id = id;
         Check.NotNull(nome, nameof(nome));
@@ -62,5 +64,6 @@ public abstract class ClienteBase : FullAuditedAggregateRoot<Guid>
         Sezione = sezione;
         Nazionalita = nazionalita;
         DataNascita = dataNascita;
+        UserId = userId;
     }
 }

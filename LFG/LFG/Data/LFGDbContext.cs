@@ -116,18 +116,6 @@ public class LFGDbContext : AbpDbContext<LFGDbContext>
 
         if (builder.IsHostDatabase())
         {
-            builder.Entity<Cliente>(b => {
-                b.ToTable(DbTablePrefix + "Clienti", DbSchema);
-                b.ConfigureByConvention();
-                b.Property(x => x.Nome).HasColumnName(nameof(Cliente.Nome)).IsRequired().HasMaxLength(ClienteConsts.NomeMaxLength);
-                b.Property(x => x.Cognome).HasColumnName(nameof(Cliente.Cognome)).IsRequired().HasMaxLength(ClienteConsts.CognomeMaxLength);
-                b.Property(x => x.Genere).HasColumnName(nameof(Cliente.Genere)).IsRequired();
-                b.Property(x => x.DataNascita).HasColumnName(nameof(Cliente.DataNascita));
-                b.Property(x => x.Email).HasColumnName(nameof(Cliente.Email)).IsRequired().HasMaxLength(ClienteConsts.EmailMaxLength);
-                b.Property(x => x.Telefono).HasColumnName(nameof(Cliente.Telefono)).IsRequired().HasMaxLength(ClienteConsts.TelefonoMaxLength);
-                b.Property(x => x.Sezione).HasColumnName(nameof(Cliente.Sezione)).IsRequired().HasMaxLength(ClienteConsts.SezioneMaxLength);
-                b.Property(x => x.Nazionalita).HasColumnName(nameof(Cliente.Nazionalita)).IsRequired();
-            });
         }
 
         if (builder.IsHostDatabase())
@@ -271,6 +259,23 @@ public class LFGDbContext : AbpDbContext<LFGDbContext>
                 b.Property(x => x.DataAggiunta).HasColumnName(nameof(ElementoLista.DataAggiunta));
                 b.HasOne<VarianteProdotto>().WithMany().IsRequired().HasForeignKey(x => x.VarianteProdottoId).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne<ListaDesideri>().WithMany().HasForeignKey(x => x.ListaDesideriId).OnDelete(DeleteBehavior.SetNull);
+            });
+        }
+
+        if (builder.IsHostDatabase())
+        {
+            builder.Entity<Cliente>(b => {
+                b.ToTable(DbTablePrefix + "Clienti", DbSchema);
+                b.ConfigureByConvention();
+                b.Property(x => x.Nome).HasColumnName(nameof(Cliente.Nome)).IsRequired().HasMaxLength(ClienteConsts.NomeMaxLength);
+                b.Property(x => x.Cognome).HasColumnName(nameof(Cliente.Cognome)).IsRequired().HasMaxLength(ClienteConsts.CognomeMaxLength);
+                b.Property(x => x.Genere).HasColumnName(nameof(Cliente.Genere)).IsRequired();
+                b.Property(x => x.DataNascita).HasColumnName(nameof(Cliente.DataNascita));
+                b.Property(x => x.Email).HasColumnName(nameof(Cliente.Email)).IsRequired().HasMaxLength(ClienteConsts.EmailMaxLength);
+                b.Property(x => x.Telefono).HasColumnName(nameof(Cliente.Telefono)).IsRequired().HasMaxLength(ClienteConsts.TelefonoMaxLength);
+                b.Property(x => x.Sezione).HasColumnName(nameof(Cliente.Sezione)).IsRequired().HasMaxLength(ClienteConsts.SezioneMaxLength);
+                b.Property(x => x.Nazionalita).HasColumnName(nameof(Cliente.Nazionalita)).IsRequired();
+                b.Property(x => x.UserId).HasColumnName(nameof(Cliente.UserId));
             });
         }
     }

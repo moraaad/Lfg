@@ -13,4 +13,5 @@ public abstract class ClienteExcelDtoBase
     public string Telefono { get; set; } = null!;
     public string Sezione { get; set; } = null!;
     public string Nazionalita { get; set; } = null!;
+    public Guid? UserId { get; set; }
 }

@@ -29,5 +29,7 @@ public abstract class ClienteUpdateDtoBase : IHasConcurrencyStamp
     public string Sezione { get; set; } = null!;
     [Required(AllowEmptyStrings = true)]
     public string Nazionalita { get; set; } = null!;
+    public Guid? UserId { get; set; }
+
     public string ConcurrencyStamp { get; set; } = null!;
 }
