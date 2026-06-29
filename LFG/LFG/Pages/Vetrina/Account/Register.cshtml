@@ -1,0 +1,91 @@
+﻿@page
+@model LFG.Pages.Vetrina.Account.RegisterModel
+@{
+    Layout = null;
+    ViewBag.Title = "Registrati";
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title — @Model.Sezione</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+</head>
+<body class="vetrina">
+
+    @await Html.PartialAsync("_VetrinaNavbar")
+
+    <section class="v-auth">
+        <div class="v-container v-auth__box">
+            <h1 class="v-auth__title">Registrati — sezione @Model.Sezione</h1>
+
+            <form method="post">
+                @* Errori generali (es. email gia registrata) *@
+                <div asp-validation-summary="All" class="v-auth__errors"></div>
+
+                @* La sezione arriva dall'URL e viaggia col form (nascosta) *@
+                <input type="hidden" asp-for="Sezione" />
+
+                <div class="v-field">
+                    <label asp-for="Input.Email">Email</label>
+                    <input asp-for="Input.Email" type="email" autocomplete="email" />
+                    <span asp-validation-for="Input.Email"></span>
+                </div>
+
+                <div class="v-field">
+                    <label asp-for="Input.Password">Password</label>
+                    <input asp-for="Input.Password" type="password" autocomplete="new-password" />
+                    <span asp-validation-for="Input.Password"></span>
+                </div>
+
+                <div class="v-field">
+                    <label asp-for="Input.Nome">Nome</label>
+                    <input asp-for="Input.Nome" type="text" autocomplete="given-name" />
+                    <span asp-validation-for="Input.Nome"></span>
+                </div>
+
+                <div class="v-field">
+                    <label asp-for="Input.Cognome">Cognome</label>
+                    <input asp-for="Input.Cognome" type="text" autocomplete="family-name" />
+                    <span asp-validation-for="Input.Cognome"></span>
+                </div>
+
+                <div class="v-field">
+                    <label asp-for="Input.Telefono">Telefono</label>
+                    <input asp-for="Input.Telefono" type="tel" autocomplete="tel" />
+                    <span asp-validation-for="Input.Telefono"></span>
+                </div>
+
+                <div class="v-field">
+                    <label asp-for="Input.Genere">Genere</label>
+                    <input asp-for="Input.Genere" type="text" />
+                    <span asp-validation-for="Input.Genere"></span>
+                </div>
+
+                <div class="v-field">
+                    <label asp-for="Input.Nazionalita">Nazionalità</label>
+                    <input asp-for="Input.Nazionalita" type="text" />
+                    <span asp-validation-for="Input.Nazionalita"></span>
+                </div>
+
+                <div class="v-field">
+                    <label asp-for="Input.DataNascita">Data di nascita</label>
+                    <input asp-for="Input.DataNascita" type="date" />
+                    <span asp-validation-for="Input.DataNascita"></span>
+                </div>
+
+                <button type="submit" class="v-btn v-btn--primary">Crea account</button>
+            </form>
+
+            <p class="v-auth__alt">
+                Hai gia un account? <a href="/Vetrina/Account/Login">Accedi</a>.
+            </p>
+        </div>
+    </section>
+
+</body>
+</html>

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Volo.Abp.Domain.Repositories;
 using LFG.Prodotti;
 using LFG.VarianteProdotti;
 
@@ -13,15 +14,15 @@ namespace LFG.Pages.Vetrina.Prodotto;
 [AllowAnonymous]
 public class IndexModel : PageModel
 {
-    private readonly IProdottiAppService _prodottiAppService;
-    private readonly IVarianteProdottiAppService _varianteAppService;
+    private readonly IRepository<LFG.Prodotti.Prodotto, Guid> _prodottoRepo;
+    private readonly IRepository<VarianteProdotto, Guid> _varianteRepo;
 
     public IndexModel(
-        IProdottiAppService prodottiAppService,
-        IVarianteProdottiAppService varianteAppService)
+        IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo,
+        IRepository<VarianteProdotto, Guid> varianteRepo)
     {
-        _prodottiAppService = prodottiAppService;
-        _varianteAppService = varianteAppService;
+        _prodottoRepo = prodottoRepo;
+        _varianteRepo = varianteRepo;
     }
 
     public string Nome { get; set; } = "";
@@ -37,20 +38,18 @@ public class IndexModel : PageModel
 
     public async Task<IActionResult> OnGetAsync(Guid id)
     {
-        var dto = await _prodottiAppService.GetWithNavigationPropertiesAsync(id);
-        if (dto?.Prodotto == null)
+        var prod = await _prodottoRepo.FindAsync(id);
+        if (prod == null)
             return NotFound();
 
-        var prod = dto.Prodotto;
         Nome = prod.Nome;
         Prezzo = prod.Prezzo;
         Sezione = prod.Sezione;
         Descrizione = prod.Descrizione;
 
-        var varianti = await _varianteAppService.GetListByProdottoIdAsync(
-            new GetVarianteProdottoListInput { ProdottoId = id, MaxResultCount = 100 });
+        var varianti = await _varianteRepo.GetListAsync(v => v.ProdottoId == id);
 
-        Varianti = varianti.Items
+        Varianti = varianti
             .Select(v => new VarianteVista(
                 v.Id,
                 v.Taglia ?? "—",

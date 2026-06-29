@@ -33,20 +33,21 @@
                 <a href="#">CONTATTI</a>
             </nav>
             <div class="v-header__actions">
-                <button class="v-icon-btn" aria-label="Account">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                    </svg>
-                </button>
-                <button class="v-icon-btn" aria-label="Carrello">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                        <line x1="3" y1="6" x2="21" y2="6" />
-                        <path d="M16 10a4 4 0 0 1-8 0" />
-                    </svg>
-                </button>
-                <a href="/Vetrina/Shop?sezione=LFG" class="v-btn v-btn--dark">SCOPRI &rarr;</a>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <span class="v-header__user">@User.Identity.Name</span>
+                    <a href="/Vetrina/Account/Logout" class="v-btn v-btn--outline">ESCI &rarr;</a>
+                }
+                else
+                {
+                    <a href="/Vetrina/Account/Login" class="v-icon-btn" aria-label="Accedi">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </a>
+                    <a href="/Vetrina/Account/Login" class="v-btn v-btn--dark">ACCEDI &rarr;</a>
+                }
             </div>
         </div>
     </header>
@@ -105,6 +106,7 @@
                     Costruita per chi vive la città come un palcoscenico.
                 </p>
                 <a href="/Vetrina/Shop?sezione=LFG" class="v-btn v-btn--outline-light">SHOP LFG &rarr;</a>
+                <a href="/Vetrina/Account/Register?sezione=LFG" class="v-btn v-btn--ghost-light">REGISTRATI &rarr;</a>
             </div>
             <div class="v-brand__visual">
                 <img src="/images/LFG_loghi.jpg" alt="LFG Collection" />
@@ -121,6 +123,7 @@
                     Per chi conosce il valore del silenzio.
                 </p>
                 <a href="/Vetrina/Shop?sezione=GLF" class="v-btn v-btn--outline-dark">SHOP GLF &rarr;</a>
+                <a href="/Vetrina/Account/Register?sezione=GLF" class="v-btn v-btn--ghost-dark">REGISTRATI &rarr;</a>
             </div>
             <div class="v-brand__visual">
                 <img src="/images/GLF_loghi.png" alt="GLF Collection" />

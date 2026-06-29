@@ -1032,3 +1032,156 @@
         transition: none !important;
     }
 }
+
+/* ============================================================
+   AUTH PAGES — .v-auth, .v-field
+   ============================================================ */
+.v-auth {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: calc(var(--nav-h, 64px) + 3rem) 1rem 3rem;
+    background: var(--bg);
+}
+
+.v-auth__box {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    padding: 2.5rem 2rem;
+}
+
+.v-auth__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 1.5rem;
+    color: var(--fg);
+}
+
+.v-auth__text {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0 0 1.5rem;
+}
+
+.v-auth__errors {
+    color: #e55;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+.v-auth__errors:empty { display: none; }
+
+.v-auth__alt {
+    margin-top: 1.25rem;
+    font-size: 0.875rem;
+    color: var(--muted);
+    text-align: center;
+}
+.v-auth__alt a {
+    color: var(--gold);
+    text-decoration: none;
+}
+.v-auth__alt a:hover { text-decoration: underline; }
+
+.v-auth--confirm .v-auth__box { text-align: center; }
+
+/* ── FORM FIELDS ─────────────────────────────────────────── */
+.v-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+}
+
+.v-field label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+}
+
+.v-field input[type="text"],
+.v-field input[type="email"],
+.v-field input[type="password"],
+.v-field input[type="tel"],
+.v-field input[type="date"] {
+    background: var(--bg);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 2px;
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    padding: 0.65rem 0.85rem;
+    transition: border-color 0.15s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.v-field input:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
+.v-field--check {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.v-field--check input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--gold);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.v-field--check label {
+    text-transform: none;
+    font-size: 0.875rem;
+    letter-spacing: 0;
+    cursor: pointer;
+}
+
+.v-field span[data-valmsg-for] {
+    color: #e55;
+    font-size: 0.8rem;
+}
+
+/* ── NAVBAR AUTH STATE ───────────────────────────────────── */
+.v-header__user {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-right: 0.5rem;
+}
+
+/* ── BRAND CTA GHOST VARIANTS ────────────────────────────── */
+.v-btn--ghost-light {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.v-btn--ghost-light:hover { color: #fff; border-color: #fff; }
+
+.v-btn--ghost-dark {
+    background: transparent;
+    color: rgba(26, 26, 26, 0.6);
+    border: 1px solid rgba(26, 26, 26, 0.3);
+}
+.v-btn--ghost-dark:hover { color: var(--bg); border-color: var(--bg); }
+
+@media (max-width: 640px) {
+    .v-auth__box { padding: 1.75rem 1.25rem; }
+}

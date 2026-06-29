@@ -1,0 +1,32 @@
+<header class="v-header">
+    <div class="v-container v-header__inner">
+        <a class="v-logo" href="/Vetrina">
+            <span class="v-logo__name">LFG | GLF</span>
+            <span class="v-logo__tagline">Life is Good &middot; Good Life is Better</span>
+        </a>
+        <nav class="v-nav">
+            <a href="#">STUDIO</a>
+            <a href="#">COLLEZIONI</a>
+            <a href="/Vetrina/Shop?sezione=LFG">LFG</a>
+            <a href="/Vetrina/Shop?sezione=GLF">GLF</a>
+            <a href="#">CONTATTI</a>
+        </nav>
+        <div class="v-header__actions">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <span class="v-header__user">@User.Identity.Name</span>
+                <a href="/Vetrina/Account/Logout" class="v-btn v-btn--outline">ESCI &rarr;</a>
+            }
+            else
+            {
+                <a href="/Vetrina/Account/Login" class="v-icon-btn" aria-label="Accedi">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                </a>
+                <a href="/Vetrina/Account/Login" class="v-btn v-btn--dark">ACCEDI &rarr;</a>
+            }
+        </div>
+    </div>
+</header>

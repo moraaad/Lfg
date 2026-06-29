@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Volo.Abp.Domain.Repositories;
 using LFG.Prodotti;
 using LFG.VarianteProdotti;
 
@@ -13,15 +14,15 @@ namespace LFG.Pages.Vetrina.Shop;
 [AllowAnonymous]
 public class IndexModel : PageModel
 {
-    private readonly IProdottiAppService _prodottiAppService;
-    private readonly IVarianteProdottiAppService _varianteAppService;
+    private readonly IRepository<LFG.Prodotti.Prodotto, Guid> _prodottoRepo;
+    private readonly IRepository<VarianteProdotto, Guid> _varianteRepo;
 
     public IndexModel(
-        IProdottiAppService prodottiAppService,
-        IVarianteProdottiAppService varianteAppService)
+        IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo,
+        IRepository<VarianteProdotto, Guid> varianteRepo)
     {
-        _prodottiAppService = prodottiAppService;
-        _varianteAppService = varianteAppService;
+        _prodottoRepo = prodottoRepo;
+        _varianteRepo = varianteRepo;
     }
 
     [BindProperty(SupportsGet = true)]
@@ -40,17 +41,12 @@ public class IndexModel : PageModel
         if (!SezioneValida)
             Sezione = "LFG";
 
-        var prodotti = await _prodottiAppService.GetListAsync(
-            new GetProdottiInput { MaxResultCount = 100, Sezione = Sezione });
+        var prodotti = await _prodottoRepo.GetListAsync(p => p.Sezione == Sezione);
+        var varianti = await _varianteRepo.GetListAsync();
 
-        var varianti = await _varianteAppService.GetListAsync(
-            new GetVarianteProdottiInput { MaxResultCount = 1000 });
-
-        foreach (var x in prodotti.Items)
+        foreach (var prod in prodotti.Take(100))
         {
-            var prod = x.Prodotto;
-
-            var img = varianti.Items
+            var img = varianti
                 .Where(v => v.ProdottoId == prod.Id && !string.IsNullOrEmpty(v.UrlImmagine))
                 .Select(v => v.UrlImmagine!)
                 .FirstOrDefault() ?? "/images/placeholder.png";

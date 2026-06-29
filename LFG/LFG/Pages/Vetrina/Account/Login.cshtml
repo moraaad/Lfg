@@ -1,0 +1,63 @@
+﻿@page
+@model LFG.Pages.Vetrina.Account.LoginModel
+@{
+    Layout = null;
+    ViewBag.Title = "Accedi";
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+</head>
+<body class="vetrina">
+
+    @await Html.PartialAsync("_VetrinaNavbar")
+
+    <section class="v-auth">
+        <div class="v-container v-auth__box">
+            <h1 class="v-auth__title">Accedi</h1>
+
+            <form method="post">
+                @* Errori generali (credenziali errate, lockout) *@
+                <div asp-validation-summary="All" class="v-auth__errors"></div>
+
+                @* Mantiene il ReturnUrl tra GET e POST *@
+                <input type="hidden" asp-for="ReturnUrl" />
+
+                <div class="v-field">
+                    <label asp-for="Input.Email">Email</label>
+                    <input asp-for="Input.Email" type="email" autocomplete="email" />
+                    <span asp-validation-for="Input.Email"></span>
+                </div>
+
+                <div class="v-field">
+                    <label asp-for="Input.Password">Password</label>
+                    <input asp-for="Input.Password" type="password" autocomplete="current-password" />
+                    <span asp-validation-for="Input.Password"></span>
+                </div>
+
+                <div class="v-field v-field--check">
+                    <input asp-for="Input.RememberMe" type="checkbox" />
+                    <label asp-for="Input.RememberMe">Ricordami</label>
+                </div>
+
+                <button type="submit" class="v-btn v-btn--primary">Accedi</button>
+            </form>
+
+            <p class="v-auth__alt">
+                Non hai un account?
+                <a href="/Vetrina/Account/Register?sezione=LFG">Registrati per LFG</a>
+                oppure
+                <a href="/Vetrina/Account/Register?sezione=GLF">per GLF</a>.
+            </p>
+        </div>
+    </section>
+
+</body>
+</html>

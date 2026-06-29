@@ -1,0 +1,35 @@
+﻿@page
+@model LFG.Pages.Vetrina.Account.RegisterConfirmationModel
+@{
+    Layout = null;
+    ViewBag.Title = "Registrazione completata";
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+</head>
+<body class="vetrina">
+
+    @await Html.PartialAsync("_VetrinaNavbar")
+
+    <section class="v-auth v-auth--confirm">
+        <div class="v-container v-auth__box">
+            <h1 class="v-auth__title">Registrazione completata</h1>
+            <p class="v-auth__text">
+                Il tuo account per la sezione <strong>@Model.Sezione</strong> è stato creato con successo.
+            </p>
+            <a href="@Model.ShopUrl" class="v-btn v-btn--primary">
+                Entra nella sezione @Model.Sezione
+            </a>
+        </div>
+    </section>
+
+</body>
+</html>
