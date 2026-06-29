@@ -1,0 +1,34 @@
+@page
+@using Microsoft.AspNetCore.Mvc.Localization
+@using LFG.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using LFG.Web.Pages.Recensioni
+ @using LFG.Recensioni; 
+@using System.Globalization
+@inject IHtmlLocalizer<LFGResource> L
+@model CreateModalModel
+@{
+    Layout = null;
+}
+<form data-ajaxForm="true" asp-page="/Recensioni/CreateModal" autocomplete="off">
+    <abp-modal id="RecensioneCreateModal">
+        <abp-modal-header title="@L["NewRecensione"].Value"></abp-modal-header>
+        <abp-modal-body>
+@*//<suite-custom-code-block-1>*@
+@*//</suite-custom-code-block-1>*@
+            <abp-input asp-for="Recensione.Valutazione"    />
+            <abp-input asp-for="Recensione.Commento"    />
+            <abp-date-picker auto-update-input="true" today-button-classes="btn-primary" asp-for="Recensione.DataRecensione" data-date="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <abp-select asp-for="Recensione.ClienteId" asp-items="Model.ClienteLookupList" label="@L["Cliente"].Value"/>
+            <abp-select asp-for="Recensione.ProdottoId" asp-items="Model.ProdottoLookupList" label="@L["Prodotto"].Value"/>
+@*//<suite-custom-code-block-2>*@
+@*//</suite-custom-code-block-2>*@
+@*//<suite-custom-code-block-3>*@
+@*//</suite-custom-code-block-3>*@
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel|AbpModalButtons.Save)">
+@*//<suite-custom-code-block-4>*@
+@*//</suite-custom-code-block-4>*@
+        </abp-modal-footer>
+    </abp-modal>
+</form>

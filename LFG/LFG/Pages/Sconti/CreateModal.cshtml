@@ -1,0 +1,35 @@
+@page
+@using Microsoft.AspNetCore.Mvc.Localization
+@using LFG.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using LFG.Web.Pages.Sconti
+ @using LFG.Sconti; 
+@using System.Globalization
+@inject IHtmlLocalizer<LFGResource> L
+@model CreateModalModel
+@{
+    Layout = null;
+}
+<form data-ajaxForm="true" asp-page="/Sconti/CreateModal" autocomplete="off">
+    <abp-modal id="ScontoCreateModal">
+        <abp-modal-header title="@L["NewSconto"].Value"></abp-modal-header>
+        <abp-modal-body>
+@*//<suite-custom-code-block-1>*@
+@*//</suite-custom-code-block-1>*@
+            <abp-input asp-for="Sconto.Codice"    />
+            <abp-input asp-for="Sconto.Tipo"    />
+            <abp-input asp-for="Sconto.Valore"   data-val="false" />
+            <abp-input asp-for="Sconto.LimiteUtilizzi"    />
+            <abp-date-picker auto-update-input="true" today-button-classes="btn-primary" asp-for="Sconto.ValidoDal" data-date="@DateTime.Now.ToString("yyyy-MM-dd")" />
+            <abp-date-picker auto-update-input="true" today-button-classes="btn-primary" asp-for="Sconto.ValidoAl" data-date="@DateTime.Now.ToString("yyyy-MM-dd")" />
+@*//<suite-custom-code-block-2>*@
+@*//</suite-custom-code-block-2>*@
+@*//<suite-custom-code-block-3>*@
+@*//</suite-custom-code-block-3>*@
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel|AbpModalButtons.Save)">
+@*//<suite-custom-code-block-4>*@
+@*//</suite-custom-code-block-4>*@
+        </abp-modal-footer>
+    </abp-modal>
+</form>

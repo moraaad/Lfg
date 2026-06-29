@@ -1,0 +1,44 @@
+@using LFG.Localization
+@using LFG.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<LFGResource> L
+@inject IAuthorizationService Authorization
+@model Guid
+<div class="rounded p-3 pb-0 pt-1">
+    <ul class="nav nav-tabs" role="tablist">
+        @if (await Authorization.IsGrantedAsync(LFGPermissions.VarianteProdotti.Default))
+    {
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="VarianteProdotti-tab-@Model" data-bs-toggle="tab" data-bs-target="#VarianteProdotto-@Model" type="button" role="tab" aria-controls="VarianteProdotto" aria-selected="true">@L["VarianteProdotti"]</a>
+        </li>
+    }
+    </ul>
+    <div class="tab-content pt-0">
+        @if (await Authorization.IsGrantedAsync(LFGPermissions.VarianteProdotti.Default))
+    {
+        <div class="tab-pane fade show active" id="VarianteProdotto-@Model" role="tabpanel" aria-labelledby="VarianteProdotto-tab-@Model">
+            @if (await Authorization.IsGrantedAsync(LFGPermissions.VarianteProdotti.Create))
+            {
+                <div class="d-flex justify-content-end mb-3">
+                    <button data-prodotto-id="@Model" class="btn btn-primary btn-sm NewVarianteProdottoButton" type="button" data-busy-text="@L["Processing"]">
+                        <i class="fa fa-plus"></i> <span>@L["NewVarianteProdotto"]</span>
+                    </button>
+                </div>
+            }
+            <table class="table table-striped dataTable no-footer" striped-rows="true" id="VarianteProdottiTable-@Model">
+                <thead>
+                <tr>
+                    <th>@L["Actions"]</th>
+                    					<th>@L["Taglia"]</th>
+					<th>@L["Colore"]</th>
+					<th>@L["Materiale"]</th>
+					<th>@L["UrlImmagine"]</th>
+					<th>@L["QtaMagazzino"]</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    }
+    </div>
+</div>

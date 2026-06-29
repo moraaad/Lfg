@@ -1,0 +1,318 @@
+@page
+@model LFG.Pages.Vetrina.IndexModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LFG | GLF — Life is Good · Good Life is Better</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+</head>
+<body class="vetrina">
+
+    <!-- ======================================================
+         NAVBAR FIXED
+         ====================================================== -->
+    <header class="v-header">
+        <div class="v-container v-header__inner">
+            <a class="v-logo" href="/Vetrina">
+                <span class="v-logo__name">LFG | GLF</span>
+                <span class="v-logo__tagline">Life is Good · Good Life is Better</span>
+            </a>
+            <nav class="v-nav">
+                <a href="#">STUDIO</a>
+                <a href="#">COLLEZIONI</a>
+                <a href="/Vetrina/Shop?sezione=LFG">LFG</a>
+                <a href="/Vetrina/Shop?sezione=GLF">GLF</a>
+                <a href="#">CONTATTI</a>
+            </nav>
+            <div class="v-header__actions">
+                <button class="v-icon-btn" aria-label="Account">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                </button>
+                <button class="v-icon-btn" aria-label="Carrello">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <path d="M16 10a4 4 0 0 1-8 0" />
+                    </svg>
+                </button>
+                <a href="/Vetrina/Shop?sezione=LFG" class="v-btn v-btn--dark">SCOPRI &rarr;</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ======================================================
+         HERO
+         ====================================================== -->
+    <section class="v-hero">
+        <div class="v-container v-hero__inner">
+            <span class="v-eyebrow">COLLEZIONE PRIMAVERA &mdash; ESTATE 2026</span>
+
+            <div class="v-hero__split">
+                <div class="v-hero__half">
+                    <span class="v-hero__name v-hero__name--lfg">LFG</span>
+                    <span class="v-hero__sub">LIFE IS GOOD</span>
+                </div>
+
+                <div class="v-hero__vline"></div>
+
+                <div class="v-hero__half">
+                    <span class="v-hero__name v-hero__name--glf">GLF</span>
+                    <span class="v-hero__sub">GOOD LIFE IS BETTER</span>
+                </div>
+            </div>
+
+            <div class="v-hero__pipe"></div>
+
+            <p class="v-hero__desc">
+                Due visioni. Un&rsquo;identità. Dove il lusso silenzioso incontra
+                l&rsquo;energia della strada &mdash; ogni capo racconta entrambe le storie.
+            </p>
+
+            <div class="v-hero__cta">
+                <a href="/Vetrina/Shop?sezione=LFG" class="v-btn v-btn--dark">ESPLORA LFG &rarr;</a>
+                <a href="/Vetrina/Shop?sezione=GLF" class="v-btn v-btn--outline">ESPLORA GLF &rarr;</a>
+            </div>
+
+            <div class="v-scroll-hint">
+                <div class="v-scroll-hint__line"></div>
+                <span class="v-scroll-hint__label">SCORRI</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================================================
+         DUAL BRAND — LFG (dark) | GLF (light)
+         ====================================================== -->
+    <div class="v-dual">
+        <!-- LFG: streetwear, dark -->
+        <div class="v-brand v-brand--lfg">
+            <div class="v-brand__content">
+                <span class="v-brand__badge">STREETWEAR</span>
+                <span class="v-brand__name">LFG</span>
+                <p class="v-brand__desc">
+                    Grafiche crude, silhouette oversize, attitudine autentica.<br />
+                    Costruita per chi vive la città come un palcoscenico.
+                </p>
+                <a href="/Vetrina/Shop?sezione=LFG" class="v-btn v-btn--outline-light">SHOP LFG &rarr;</a>
+            </div>
+            <div class="v-brand__visual">
+                <img src="/images/placeholder.png" alt="LFG Collection" />
+            </div>
+        </div>
+
+        <!-- GLF: old money, light -->
+        <div class="v-brand v-brand--glf">
+            <div class="v-brand__content">
+                <span class="v-brand__badge">OLD MONEY</span>
+                <span class="v-brand__name">GLF</span>
+                <p class="v-brand__desc">
+                    Tessuti pregiati, forme classiche, eleganza senza sforzo.<br />
+                    Per chi conosce il valore del silenzio.
+                </p>
+                <a href="/Vetrina/Shop?sezione=GLF" class="v-btn v-btn--outline-dark">SHOP GLF &rarr;</a>
+            </div>
+            <div class="v-brand__visual">
+                <img src="/images/placeholder.png" alt="GLF Collection" />
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================
+         PRODOTTI IN EVIDENZA
+         ====================================================== -->
+    <section class="v-featured">
+        <div class="v-container">
+
+            <!-- GLF — selezione chiara -->
+            <div class="v-featured__header">
+                <div>
+                    <span class="v-eyebrow">SELEZIONE &mdash; SS26</span>
+                    <h2 class="v-section-title">Prodotti in evidenza</h2>
+                </div>
+                <a href="/Vetrina/Shop?sezione=GLF" class="v-link-arrow">VEDI TUTTO &rarr;</a>
+            </div>
+
+            <div class="v-grid">
+                <div class="v-card v-card--glf">
+                    <div class="v-card__img-wrap">
+                        <img src="/images/placeholder.png" alt="Cappotto Overcoat" />
+                    </div>
+                    <div class="v-card__caption">
+                        <div class="v-card__meta">
+                            <span class="v-card__brand">GLF</span>
+                            <span class="v-card__price">&euro; 890</span>
+                        </div>
+                        <span class="v-card__name">Cappotto Overcoat</span>
+                    </div>
+                </div>
+
+                <div class="v-card v-card--glf">
+                    <div class="v-card__img-wrap">
+                        <span class="v-badge">NUOVO</span>
+                        <img src="/images/placeholder.png" alt="Blazer Classico" />
+                    </div>
+                    <div class="v-card__caption">
+                        <div class="v-card__meta">
+                            <span class="v-card__brand">GLF</span>
+                            <span class="v-card__price">&euro; 650</span>
+                        </div>
+                        <span class="v-card__name">Blazer Classico</span>
+                    </div>
+                </div>
+
+                <div class="v-card v-card--glf">
+                    <div class="v-card__img-wrap">
+                        <img src="/images/placeholder.png" alt="Maglia V-Neck" />
+                    </div>
+                    <div class="v-card__caption">
+                        <div class="v-card__meta">
+                            <span class="v-card__brand">GLF</span>
+                            <span class="v-card__price">&euro; 220</span>
+                        </div>
+                        <span class="v-card__name">Maglia V-Neck</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LFG — selezione scura -->
+            <div class="v-grid" style="margin-top: var(--gap);">
+                <div class="v-card v-card--lfg">
+                    <div class="v-card__img-wrap">
+                        <span class="v-badge">NUOVO</span>
+                        <img src="/images/placeholder.png" alt="LFG Leather Bomber" />
+                    </div>
+                    <div class="v-card__caption">
+                        <div class="v-card__meta">
+                            <span class="v-card__brand">LFG</span>
+                            <span class="v-card__price">&euro; 589</span>
+                        </div>
+                        <span class="v-card__name">LFG Leather Bomber</span>
+                    </div>
+                </div>
+
+                <div class="v-card v-card--lfg">
+                    <div class="v-card__img-wrap">
+                        <img src="/images/placeholder.png" alt="LFG Essential Tee" />
+                    </div>
+                    <div class="v-card__caption">
+                        <div class="v-card__meta">
+                            <span class="v-card__brand">LFG</span>
+                            <span class="v-card__price">&euro; 120</span>
+                        </div>
+                        <span class="v-card__name">LFG Essential Tee</span>
+                    </div>
+                </div>
+
+                <div class="v-card v-card--lfg">
+                    <div class="v-card__img-wrap">
+                        <span class="v-badge">NUOVO</span>
+                        <img src="/images/placeholder.png" alt="LFG Fleece Hoodie" />
+                    </div>
+                    <div class="v-card__caption">
+                        <div class="v-card__meta">
+                            <span class="v-card__brand">LFG</span>
+                            <span class="v-card__price">&euro; 285</span>
+                        </div>
+                        <span class="v-card__name">LFG Fleece Hoodie</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ======================================================
+         MANIFESTO
+         ====================================================== -->
+    <section class="v-manifesto">
+        <div class="v-container v-manifesto__inner">
+            <span class="v-eyebrow v-eyebrow--dim">MANIFESTO</span>
+
+            <p class="v-manifesto__quote">
+                &ldquo;Non vestiamo corpi.<br />
+                Vestiamo intenzioni.&rdquo;
+            </p>
+            <p class="v-manifesto__attr">&mdash; LFG &middot; GLF STUDIO, MILANO</p>
+
+            <hr class="v-manifesto__rule" />
+
+            <div class="v-stats">
+                <div class="v-stat">
+                    <span class="v-stat__number">2019</span>
+                    <span class="v-stat__label">ANNO DI<br />FONDAZIONE</span>
+                </div>
+                <div class="v-stat">
+                    <span class="v-stat__number">12</span>
+                    <span class="v-stat__label">COLLEZIONI<br />LANCIATE</span>
+                </div>
+                <div class="v-stat">
+                    <span class="v-stat__number">480+</span>
+                    <span class="v-stat__label">REFERENZE<br />PRODOTTO</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================================================
+         NEWSLETTER
+         ====================================================== -->
+    <section class="v-newsletter">
+        <div class="v-container v-newsletter__inner">
+            <span class="v-eyebrow v-eyebrow--gold">NEWSLETTER</span>
+            <h2 class="v-newsletter__title">Entra nel mondo LFG &middot; GLF</h2>
+            <p class="v-newsletter__desc">
+                Anteprime esclusive, lanci in edizione limitata e approfondimenti
+                dal nostro studio.
+            </p>
+            <form class="v-newsletter__form" onsubmit="return false;">
+                <input type="email" class="v-newsletter__input" placeholder="La tua email" autocomplete="email" />
+                <button type="submit" class="v-btn v-btn--dark">ISCRIVITI &rarr;</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ======================================================
+         FOOTER
+         ====================================================== -->
+    <footer class="v-footer">
+        <div class="v-container v-footer__inner">
+            <div class="v-footer__brand">
+                <span class="v-footer__logo">LFG | GLF</span>
+                <span class="v-footer__tagline">LIFE IS GOOD &middot; GOOD LIFE IS BETTER</span>
+                <p class="v-footer__desc">
+                    Studio milanese. Due anime, un&rsquo;identità. Streetwear e old
+                    money si incontrano in ogni collezione.
+                </p>
+            </div>
+
+            <div class="v-footer__col">
+                <span class="v-footer__col-title">NAVIGAZIONE</span>
+                <a href="#">Studio</a>
+                <a href="#">Collezioni</a>
+                <a href="/Vetrina/Shop?sezione=LFG">LFG</a>
+                <a href="/Vetrina/Shop?sezione=GLF">GLF</a>
+            </div>
+
+            <div class="v-footer__col">
+                <span class="v-footer__col-title">INFORMAZIONI</span>
+                <a href="#">Spedizioni &amp; Resi</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Cookie Policy</a>
+                <a href="/Account/Login">Area Riservata</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

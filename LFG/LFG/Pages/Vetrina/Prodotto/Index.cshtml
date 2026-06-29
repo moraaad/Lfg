@@ -1,0 +1,101 @@
+@page "{id:guid}"
+@model LFG.Pages.Vetrina.Prodotto.IndexModel
+@{
+    Layout = null;
+    var isLfg = string.Equals(Model.Sezione, "LFG", System.StringComparison.OrdinalIgnoreCase);
+    ViewBag.Title = Model.Nome;
+    var imgPrincipale = Model.Varianti.Any() ? Model.Varianti.First().UrlImmagine : "/images/placeholder.png";
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+</head>
+<body class="vetrina @(isLfg ? "shop--lfg" : "shop--glf")">
+
+    <header class="v-header">
+        <div class="v-container v-header__inner">
+            <a class="v-logo" href="/Vetrina">
+                <span class="v-logo__name">LFG | GLF</span>
+                <span class="v-logo__tagline">La Firma Giusta</span>
+            </a>
+            <nav class="v-nav">
+                <a href="/Vetrina/Shop?sezione=LFG">SHOP LFG</a>
+                <a href="/Vetrina/Shop?sezione=GLF">SHOP GLF</a>
+            </nav>
+            <div class="v-header__actions">
+                <a href="/Account/Login" class="v-btn v-btn--dark">Accedi</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="v-detail">
+        <div class="v-container v-detail__inner">
+
+            <div class="v-detail__media">
+                <a href="c:\sviluppo\lfg\lfg\lfg\pages\vetrina\prodotto\index.cshtml">c:\sviluppo\lfg\lfg\lfg\pages\vetrina\prodotto\index.cshtml</a>
+                <a href="c:\sviluppo\lfg\lfg\lfg\pages\vetrina\prodotto\index.cshtml.cs">c:\sviluppo\lfg\lfg\lfg\pages\vetrina\prodotto\index.cshtml.cs</a>
+                <img id="mainImage" src="@imgPrincipale" alt="@Model.Nome" />
+            </div>
+
+            <div class="v-detail__info">
+                <h1 class="v-detail__name">@Model.Nome</h1>
+                <p class="v-detail__price">€ @Model.Prezzo</p>
+
+                @if (!string.IsNullOrEmpty(Model.Descrizione))
+                {
+                    <p class="v-detail__desc">@Model.Descrizione</p>
+                }
+
+                @if (Model.Varianti.Any())
+                {
+                    <div class="v-variants">
+                        <span class="v-variants__label">Varianti</span>
+                        <div class="v-variants__list">
+                            @foreach (var v in Model.Varianti)
+                            {
+                                var disponibile = v.QtaMagazzino > 0;
+                                <button type="button"
+                                        class="v-variant @(disponibile ? "" : "is-out")"
+                                        data-img="@v.UrlImmagine"
+                                        disabled="@(!disponibile)">
+                                    @v.Taglia · @v.Colore
+                                    @if (!disponibile)
+                                    {
+                                        <span class="v-variant__out">esaurito</span>
+                                    }
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <button type="button" class="v-btn v-btn--primary" disabled>
+                        AGGIUNGI AL CARRELLO &mdash; disponibile dopo il login
+                    </button>
+                }
+                else
+                {
+                    <p class="v-empty">Nessuna variante disponibile.</p>
+                }
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        document.querySelectorAll('.v-variant[data-img]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var url = btn.getAttribute('data-img');
+                if (url) document.getElementById('mainImage').src = url;
+            });
+        });
+    </script>
+
+</body>
+</html>

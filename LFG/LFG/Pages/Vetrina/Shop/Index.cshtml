@@ -1,0 +1,68 @@
+@page
+@model LFG.Pages.Vetrina.Shop.IndexModel
+@{
+    Layout = null;
+    var isLfg = string.Equals(Model.Sezione, "LFG", System.StringComparison.OrdinalIgnoreCase);
+    ViewBag.Title = isLfg ? "SHOP LFG" : "SHOP GLF";
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+</head>
+<body class="vetrina @(isLfg ? "shop--lfg" : "shop--glf")">
+
+    <header class="v-header">
+        <div class="v-container v-header__inner">
+            <a class="v-logo" href="/Vetrina">
+                <span class="v-logo__name">LFG | GLF</span>
+                <span class="v-logo__tagline">La Firma Giusta</span>
+            </a>
+            <nav class="v-nav">
+                <a href="/Vetrina/Shop?sezione=LFG">SHOP LFG</a>
+                <a href="/Vetrina/Shop?sezione=GLF">SHOP GLF</a>
+            </nav>
+            <div class="v-header__actions">
+                <a href="/Account/Login" class="v-btn v-btn--dark">Accedi</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="v-shop">
+        <div class="v-container">
+            <h1 class="v-section-title">@ViewBag.Title</h1>
+
+            @if (!Model.Capi.Any())
+            {
+                <p class="v-empty">Nessun capo disponibile al momento.</p>
+            }
+            else
+            {
+                <div class="v-grid">
+                    @foreach (var c in Model.Capi)
+                    {
+                        <a class="v-card v-card--@(isLfg ? "lfg" : "glf")" href="/Vetrina/Prodotto/@c.Id">
+                            <div class="v-card__img-wrap">
+                                <img src="@c.UrlImmagine" alt="@c.Nome" />
+                            </div>
+                            <div class="v-card__caption">
+                                <div class="v-card__meta">
+                                    <span class="v-card__name">@c.Nome</span>
+                                    <span class="v-card__price">€ @c.Prezzo</span>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+</body>
+</html>

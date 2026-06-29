@@ -1,0 +1,35 @@
+@page
+@using Microsoft.AspNetCore.Mvc.Localization
+@using LFG.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using LFG.Web.Pages.Pagamenti
+ @using LFG.Pagamenti; 
+@using System.Globalization
+@inject IHtmlLocalizer<LFGResource> L
+@model CreateModalModel
+@{
+    Layout = null;
+}
+<form data-ajaxForm="true" asp-page="/Pagamenti/CreateModal" autocomplete="off">
+    <abp-modal id="PagamentoCreateModal">
+        <abp-modal-header title="@L["NewPagamento"].Value"></abp-modal-header>
+        <abp-modal-body>
+@*//<suite-custom-code-block-1>*@
+@*//</suite-custom-code-block-1>*@
+            <abp-input asp-for="Pagamento.Metodo"    />
+            <abp-input asp-for="Pagamento.Stato"    />
+            <abp-input asp-for="Pagamento.Importo"   data-val="false" />
+            <abp-date-picker auto-update-input="true" today-button-classes="btn-primary" asp-for="Pagamento.DataPagamento" data-date="@DateTime.Now.ToString("yyyy-MM-dd")" />
+            <abp-input asp-for="Pagamento.IdTransazione"    />
+                                <abp-select asp-for="Pagamento.OrdineId" asp-items="Model.OrdineLookupList" label="@L["Ordine"].Value"/>
+@*//<suite-custom-code-block-2>*@
+@*//</suite-custom-code-block-2>*@
+@*//<suite-custom-code-block-3>*@
+@*//</suite-custom-code-block-3>*@
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel|AbpModalButtons.Save)">
+@*//<suite-custom-code-block-4>*@
+@*//</suite-custom-code-block-4>*@
+        </abp-modal-footer>
+    </abp-modal>
+</form>

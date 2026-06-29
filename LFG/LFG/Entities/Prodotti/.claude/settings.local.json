@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"C:\\\\Sviluppo\\\\LFG\\\\LFG\\\\LFG\" && ls -la)",
+      "Bash(xargs grep -l \"TagHelper\\\\|addTagHelper\")",
+      "Bash(rm \"C:/Sviluppo/LFG/LFG/LFG/Pages/Vetrina/Index.cshtml\")",
+      "Bash(rm \"C:/Sviluppo/LFG/LFG/LFG/Pages/Vetrina/Index.cshtml.cs\")",
+      "Bash(dotnet build *)"
+    ]
+  }
+}
