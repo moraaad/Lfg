@@ -1,0 +1,61 @@
+@page
+@model LFG.Pages.Admin.NormalizzaPrezziModel
+@{
+    ViewBag.Title = "Normalizzazione prezzi";
+}
+<h2>Normalizzazione prezzi prodotti</h2>
+<p>
+    Converte tutti i valori <code>Prezzo</code> nel formato canonico
+    <strong>punto decimale, nessun separatore migliaia, due decimali</strong>.<br />
+    <strong>Esegui solo dopo aver fatto un backup del database.</strong>
+    L&rsquo;operazione è idempotente: rilanciarla su dati già normalizzati non produce modifiche.
+</p>
+
+@if (Model.Risultato == null)
+{
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" onclick="return confirm('Confermi la normalizzazione? Assicurati di aver eseguito il backup del DB.')">
+            Avvia normalizzazione
+        </button>
+    </form>
+}
+else
+{
+    var r = Model.Risultato;
+    <h3>Risultato</h3>
+    <ul>
+        <li>Prodotti esaminati: <strong>@r.TotaleEsaminati</strong></li>
+        <li>Modificati: <strong>@r.TotaleModificati</strong></li>
+        <li>Anomalie (non convertibili): <strong>@r.TotaleAnomalie</strong></li>
+    </ul>
+
+    @if (r.Log.Count > 0)
+    {
+        <table border="1" cellpadding="4" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Prima</th>
+                    <th>Dopo</th>
+                    <th>Esito</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var voce in r.Log)
+                {
+                    <tr>
+                        <td>@voce.Nome</td>
+                        <td><code>@voce.PrimaDi</code></td>
+                        <td><code>@voce.DopoDi</code></td>
+                        <td>
+                            @if (voce.Anomalia)     { <span style="color:red">ANOMALIA</span> }
+                            else if (voce.Modificato){ <span style="color:orange">Modificato</span> }
+                            else                    { <span style="color:green">OK (invariato)</span> }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
