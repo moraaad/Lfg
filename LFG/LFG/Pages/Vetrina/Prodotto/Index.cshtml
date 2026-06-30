@@ -3,6 +3,8 @@
 @{
     Layout = null;
     var isLfg = string.Equals(Model.Sezione, "LFG", System.StringComparison.OrdinalIgnoreCase);
+    var sezioneProdotto = Model.Sezione?.ToUpperInvariant() ?? "LFG";
+    var altreSezione = isLfg ? "GLF" : "LFG";
     ViewBag.Title = Model.Nome;
     var imgPrincipale = Model.Varianti.Any() ? Model.Varianti.First().UrlImmagine : "/images/placeholder.png";
 }
@@ -16,24 +18,75 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+    <style>
+        /* ── Gating popup ────────────────────────────────── */
+        .v-popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            z-index: 900;
+            align-items: center;
+            justify-content: center;
+        }
+        .v-popup-overlay.is-open {
+            display: flex;
+        }
+        .v-popup {
+            background: #fff;
+            max-width: 420px;
+            width: calc(100% - 2rem);
+            padding: 2.5rem 2rem 2rem;
+            position: relative;
+        }
+        .shop--lfg .v-popup {
+            background: #111;
+            color: #f5f5f5;
+        }
+        .v-popup__close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            line-height: 1;
+            color: inherit;
+            opacity: .55;
+        }
+        .v-popup__close:hover { opacity: 1; }
+        .v-popup__eyebrow {
+            font-family: 'Space Mono', monospace;
+            font-size: .65rem;
+            letter-spacing: .12em;
+            opacity: .5;
+            text-transform: uppercase;
+            margin-bottom: .75rem;
+        }
+        .v-popup__title {
+            font-family: 'Barlow', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin: 0 0 .75rem;
+        }
+        .v-popup__body {
+            font-size: .9rem;
+            line-height: 1.6;
+            opacity: .8;
+            margin-bottom: 1.5rem;
+        }
+        .v-popup__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .6rem;
+        }
+    </style>
 </head>
 <body class="vetrina @(isLfg ? "shop--lfg" : "shop--glf")">
 
-    <header class="v-header">
-        <div class="v-container v-header__inner">
-            <a class="v-logo" href="/Vetrina">
-                <span class="v-logo__name">LFG | GLF</span>
-                <span class="v-logo__tagline">La Firma Giusta</span>
-            </a>
-            <nav class="v-nav">
-                <a href="/Vetrina/Shop?sezione=LFG">SHOP LFG</a>
-                <a href="/Vetrina/Shop?sezione=GLF">SHOP GLF</a>
-            </nav>
-            <div class="v-header__actions">
-                <a href="/Account/Login" class="v-btn v-btn--dark">Accedi</a>
-            </div>
-        </div>
-    </header>
+    <partial name="../Account/_VetrinaNavbar" />
 
     <section class="v-detail">
         <div class="v-container v-detail__inner">
@@ -73,9 +126,19 @@
                         </div>
                     </div>
 
-                    <button type="button" class="v-btn v-btn--primary" disabled>
-                        AGGIUNGI AL CARRELLO &mdash; disponibile dopo il login
-                    </button>
+                    @if (Model.PuoAgire)
+                    {
+                        <button type="button" class="v-btn v-btn--primary">
+                            AGGIUNGI AL CARRELLO
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" class="v-btn v-btn--primary"
+                                onclick="document.getElementById('gatingPopup').classList.add('is-open')">
+                            AGGIUNGI AL CARRELLO
+                        </button>
+                    }
                 }
                 else
                 {
@@ -86,12 +149,69 @@
         </div>
     </section>
 
+    @if (!Model.PuoAgire)
+    {
+        <!-- Popup gating cross-sezione -->
+        <div id="gatingPopup" class="v-popup-overlay" role="dialog" aria-modal="true"
+             onclick="if(event.target===this)this.classList.remove('is-open')">
+            <div class="v-popup">
+                <button class="v-popup__close" onclick="document.getElementById('gatingPopup').classList.remove('is-open')" aria-label="Chiudi">&times;</button>
+
+                @if (Model.SezioneUtente != null)
+                {
+                    <!-- Utente loggato ma sezione diversa -->
+                    <p class="v-popup__eyebrow">Accesso riservato</p>
+                    <h2 class="v-popup__title">Collezione @sezioneProdotto</h2>
+                    <p class="v-popup__body">
+                        Questa collezione è riservata ai membri <strong>@sezioneProdotto</strong>.<br />
+                        Il tuo account è registrato nella sezione <strong>@Model.SezioneUtente</strong>.
+                    </p>
+                    <div class="v-popup__actions">
+                        <a href="/Vetrina/Account/Register?sezione=@sezioneProdotto"
+                           class="v-btn @(isLfg ? "v-btn--dark" : "v-btn--primary")">
+                            REGISTRATI PER @sezioneProdotto &rarr;
+                        </a>
+                        <button type="button" class="v-btn v-btn--outline"
+                                onclick="document.getElementById('gatingPopup').classList.remove('is-open')">
+                            CHIUDI
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <!-- Utente anonimo -->
+                    <p class="v-popup__eyebrow">Accesso richiesto</p>
+                    <h2 class="v-popup__title">Accedi per acquistare</h2>
+                    <p class="v-popup__body">
+                        Accedi o crea un account <strong>@sezioneProdotto</strong> per aggiungere
+                        prodotti al carrello.
+                    </p>
+                    <div class="v-popup__actions">
+                        <a href="/Vetrina/Account/Login" class="v-btn v-btn--dark">
+                            ACCEDI &rarr;
+                        </a>
+                        <a href="/Vetrina/Account/Register?sezione=@sezioneProdotto"
+                           class="v-btn v-btn--outline">
+                            REGISTRATI
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
     <script>
         document.querySelectorAll('.v-variant[data-img]').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 var url = btn.getAttribute('data-img');
                 if (url) document.getElementById('mainImage').src = url;
             });
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                var popup = document.getElementById('gatingPopup');
+                if (popup) popup.classList.remove('is-open');
+            }
         });
     </script>
 

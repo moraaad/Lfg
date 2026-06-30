@@ -58,6 +58,16 @@ public class RegisterModel : PageModel
         if (!ModelState.IsValid) return Page();
         if (!SezioneValida()) Sezione = "LFG";
 
+        Sezione = Sezione.ToUpperInvariant();
+
+        // check: email già usata da un Cliente
+        var esiste = await _clienteRepo.AnyAsync(c => c.Email == Input.Email);
+        if (esiste)
+        {
+            ModelState.AddModelError(string.Empty, "Questa email risulta già registrata.");
+            return Page();
+        }
+
         var user = new IdentityUser(
             id: Guid.NewGuid(),
             userName: Input.Email,
@@ -83,7 +93,15 @@ public class RegisterModel : PageModel
             dataNascita: Input.DataNascita,
             userId: user.Id);
 
-        await _clienteRepo.InsertAsync(cliente, autoSave: true);
+        try
+        {
+            await _clienteRepo.InsertAsync(cliente); // senza autoSave per ATOMICIZZARE la unite of work a fine metodo OnPostAsync
+        }
+        catch
+        {
+            await _userManager.DeleteAsync(user); // rollback manuale dell'utente
+            throw;
+        } 
 
         return RedirectToPage("RegisterConfirmation", new { sezione = Sezione });
     }

@@ -1,3 +1,12 @@
+@inject LFG.Clienti.IClientiAppService ClientiSvc
+@{
+    string? sezioneUtente = null;
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        sezioneUtente = await ClientiSvc.GetSezioneCorrenteAsync();
+    }
+    var isLfgUtente = string.Equals(sezioneUtente, "LFG", StringComparison.OrdinalIgnoreCase);
+}
 <header class="v-header">
     <div class="v-container v-header__inner">
         <a class="v-logo" href="/Vetrina">
@@ -14,7 +23,13 @@
         <div class="v-header__actions">
             @if (User.Identity?.IsAuthenticated == true)
             {
-                <span class="v-header__user">@User.Identity.Name</span>
+                @if (sezioneUtente != null)
+                {
+                    <span class="v-header__badge v-header__badge--@(isLfgUtente ? "lfg" : "glf")">
+                        @sezioneUtente
+                    </span>
+                }
+                <a href="/Vetrina/Account" class="v-header__user">@User.Identity.Name</a>
                 <a href="/Vetrina/Account/Logout" class="v-btn v-btn--outline">ESCI &rarr;</a>
             }
             else
@@ -26,6 +41,7 @@
                     </svg>
                 </a>
                 <a href="/Vetrina/Account/Login" class="v-btn v-btn--dark">ACCEDI &rarr;</a>
+                <a href="/Vetrina/Account/Register" class="v-btn v-btn--outline">REGISTRATI</a>
             }
         </div>
     </div>

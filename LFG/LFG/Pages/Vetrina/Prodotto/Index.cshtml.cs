@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Volo.Abp.Domain.Repositories;
 using LFG.Prodotti;
 using LFG.VarianteProdotti;
+using LFG.Clienti;
 
 namespace LFG.Pages.Vetrina.Prodotto;
 
@@ -16,19 +17,24 @@ public class IndexModel : PageModel
 {
     private readonly IRepository<LFG.Prodotti.Prodotto, Guid> _prodottoRepo;
     private readonly IRepository<VarianteProdotto, Guid> _varianteRepo;
+    private readonly IClientiAppService _clientiAppService;
 
     public IndexModel(
         IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo,
-        IRepository<VarianteProdotto, Guid> varianteRepo)
+        IRepository<VarianteProdotto, Guid> varianteRepo,
+        IClientiAppService clientiAppService)
     {
         _prodottoRepo = prodottoRepo;
         _varianteRepo = varianteRepo;
+        _clientiAppService = clientiAppService;
     }
 
     public string Nome { get; set; } = "";
     public string Prezzo { get; set; } = "";
     public string Sezione { get; set; } = "";
     public string? Descrizione { get; set; }
+    public bool PuoAgire { get; set; }
+    public string? SezioneUtente { get; set; }
 
     public record VarianteVista(
         Guid Id, string Taglia, string Colore, string Materiale,
@@ -58,6 +64,14 @@ public class IndexModel : PageModel
                 v.QtaMagazzino,
                 string.IsNullOrEmpty(v.UrlImmagine) ? "/images/placeholder.png" : v.UrlImmagine))
             .ToList();
+
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            SezioneUtente = await _clientiAppService.GetSezioneCorrenteAsync();
+        }
+
+        PuoAgire = SezioneUtente != null &&
+                   string.Equals(SezioneUtente, prod.Sezione, StringComparison.OrdinalIgnoreCase);
 
         return Page();
     }

@@ -17,6 +17,7 @@ using Volo.Abp.Authorization;
 using Volo.Abp.Caching;
 using Microsoft.Extensions.Caching.Distributed;
 using LFG.Shared;
+using Volo.Abp.Users;
 
 namespace LFG.Clienti;
 
@@ -26,12 +27,14 @@ public abstract class ClientiAppServiceBase : ApplicationService
     protected IDistributedCache<ClienteDownloadTokenCacheItem, string> _downloadTokenCache;
     protected IClienteRepository _clienteRepository;
     protected ClienteManager _clienteManager;
-
-    public ClientiAppServiceBase(IClienteRepository clienteRepository, ClienteManager clienteManager, IDistributedCache<ClienteDownloadTokenCacheItem, string> downloadTokenCache)
+    private readonly ICurrentUser _currentUser;
+   
+    public ClientiAppServiceBase(IClienteRepository clienteRepository, ClienteManager clienteManager, IDistributedCache<ClienteDownloadTokenCacheItem, string> downloadTokenCache, ICurrentUser currentUser )
     {
         _downloadTokenCache = downloadTokenCache;
         _clienteRepository = clienteRepository;
         _clienteManager = clienteManager;
+        _currentUser = currentUser;
     }
 
     public virtual async Task<PagedResultDto<ClienteDto>> GetListAsync(GetClientiInput input)
@@ -106,5 +109,48 @@ public abstract class ClientiAppServiceBase : ApplicationService
         {
             Token = token
         };
+    }
+
+    [AllowAnonymous]
+    public async Task<ClienteDto?> GetClienteCorrenteAsync()
+    {
+        var userId = _currentUser.Id;
+        if (userId == null)
+            return null; // non loggato
+
+        var cliente = await _clienteRepository
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        return cliente == null
+            ? null  // loggato ma senza Cliente (es. admin)
+            : ObjectMapper.Map<Cliente, ClienteDto>(cliente);
+    }
+
+    [AllowAnonymous]
+    public async Task<string?> GetSezioneCorrenteAsync()
+    {
+        var userId = _currentUser.Id;
+        if (userId == null)
+            return null; // non loggato
+
+        var cliente = await _clienteRepository
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        return cliente?.Sezione; // null se loggato ma senza Cliente
+    }
+
+    public async Task VerificaAccessoSezioneAsync(string sezioneProdotto)
+    {
+        var sezioneUtente = await GetSezioneCorrenteAsync();
+
+        // null = non loggato oppure loggato senza Cliente: in entrambi i casi, vietato
+        if (sezioneUtente == null)
+            throw new AbpAuthorizationException(
+                "Devi effettuare l'accesso per compiere questa azione.");
+
+        if (!string.Equals(sezioneUtente, sezioneProdotto, StringComparison.OrdinalIgnoreCase))
+            throw new BusinessException("LFG:CrossSezione")
+                .WithData("SezioneUtente", sezioneUtente)
+                .WithData("SezioneProdotto", sezioneProdotto);
     }
 }

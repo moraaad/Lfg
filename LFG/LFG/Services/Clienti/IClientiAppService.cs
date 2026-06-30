@@ -19,4 +19,7 @@ public partial interface IClientiAppService : IApplicationService
     Task DeleteByIdsAsync(List<Guid> clienteIds);
     Task DeleteAllAsync(GetClientiInput input);
     Task<LFG.Shared.DownloadTokenResultDto> GetDownloadTokenAsync();
+    Task<ClienteDto?> GetClienteCorrenteAsync();
+    Task<string?> GetSezioneCorrenteAsync();
+    Task VerificaAccessoSezioneAsync(string sezioneProdotto);
 }
