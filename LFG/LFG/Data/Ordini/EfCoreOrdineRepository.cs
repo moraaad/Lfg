@@ -37,7 +37,7 @@ public abstract class EfCoreOrdineRepositoryBase : EfCoreRepository<LFGDbContext
     {
         var query = await GetQueryForNavigationPropertiesAsync();
         query = ApplyFilter(query, filterText, dataOrdineMin, dataOrdineMax, stato, importoTotaleMin, importoTotaleMax, indSpedizione, metodoPagamento, clienteId, scontoId);
-        query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? OrdineConsts.GetDefaultSorting(true) : sorting);
+        query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? OrdineConsts.GetDefaultSorting(true) : sorting); // 1 
         return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
     }
 
@@ -64,7 +64,7 @@ public abstract class EfCoreOrdineRepositoryBase : EfCoreRepository<LFGDbContext
     public virtual async Task<List<Ordine>> GetListAsync(string? filterText = null, DateTime? dataOrdineMin = null, DateTime? dataOrdineMax = null, string? stato = null, decimal? importoTotaleMin = null, decimal? importoTotaleMax = null, string? indSpedizione = null, string? metodoPagamento = null, string? sorting = null, int maxResultCount = int.MaxValue, int skipCount = 0, CancellationToken cancellationToken = default)
     {
         var query = ApplyFilter((await GetQueryableAsync()), filterText, dataOrdineMin, dataOrdineMax, stato, importoTotaleMin, importoTotaleMax, indSpedizione, metodoPagamento);
-        query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? OrdineConsts.GetDefaultSorting(false) : sorting);
+        query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? OrdineConsts.GetDefaultSorting(false) : sorting); // 2
         return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
     }
 

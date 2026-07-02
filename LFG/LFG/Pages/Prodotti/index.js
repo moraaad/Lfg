@@ -419,6 +419,12 @@ $(function () {
             modalClass: 'varianteProdottoEdit',
         });
 
+        var varianteProdottoImmaginiModal = new abp.ModalManager({
+            viewUrl: abp.appPath + 'VarianteProdotti/ImmaginiModal',
+            scriptUrl: abp.appPath + 'Pages/VarianteProdotti/immaginiModal.js',
+            modalClass: 'varianteProdottoImmagini',
+        });
+
         var varianteProdottoDataTable = $('#VarianteProdottiTable-' + prodottoId).DataTable(
             abp.libs.datatables.normalizeConfiguration({
                 processing: true,
@@ -460,6 +466,15 @@ $(function () {
                                                 abp.notify.success(l('SuccessfullyDeleted'));
                                                 varianteProdottoDataTable.ajax.reloadEx();
                                             });
+                                    },
+                                },
+                                {
+                                    text: 'Gestisci immagini',
+                                    visible: abp.auth.isGranted('LFG.ImmagineVarianti'),
+                                    action: function (data) {
+                                        varianteProdottoImmaginiModal.open({
+                                            varianteProdottoId: data.record.id,
+                                        });
                                     },
                                 },
                             ],

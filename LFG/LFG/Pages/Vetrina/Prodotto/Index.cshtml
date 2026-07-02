@@ -7,7 +7,8 @@
     var isLfg = string.Equals(Model.Sezione, "LFG", System.StringComparison.OrdinalIgnoreCase);
     var sezioneProdotto = Model.Sezione?.ToUpperInvariant() ?? "LFG";
     ViewBag.Title = Model.Nome;
-    var imgPrincipale = Model.Varianti.Any() ? Model.Varianti.First().UrlImmagine : "/images/placeholder.png";
+    var imgPrincipale = Model.Varianti.Any() ? Model.Varianti.First().Immagini.First() : "/images/placeholder.png";
+    var miniatureIniziali = Model.Varianti.Any() ? Model.Varianti.First().Immagini : new List<string>();
 }
 <!DOCTYPE html>
 <html lang="it">
@@ -20,6 +21,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
     <style>
+        /* ── Galleria immagini variante ──────────────────── */
+        .v-thumbs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            margin-top: .75rem;
+        }
+        .v-thumb {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            cursor: pointer;
+            opacity: .6;
+            border: 2px solid transparent;
+            transition: opacity .15s, border-color .15s;
+        }
+        .v-thumb:hover { opacity: .9; }
+        .v-thumb.is-active {
+            opacity: 1;
+            border-color: #c8a96e;
+        }
+
         /* ── Gating popup ────────────────────────────────── */
         .v-popup-overlay {
             display: none;
@@ -196,6 +219,15 @@
 
             <div class="v-detail__media">
                 <img id="mainImage" src="@imgPrincipale" alt="@Model.Nome" />
+                <div id="thumbStrip" class="v-thumbs">
+                    @if (miniatureIniziali.Count > 1)
+                    {
+                        @foreach (var url in miniatureIniziali)
+                        {
+                            <img class="v-thumb @(url == imgPrincipale ? "is-active" : "")" src="@url" data-img="@url" alt="miniatura" />
+                        }
+                    }
+                </div>
             </div>
 
             <div class="v-detail__info">
@@ -217,7 +249,7 @@
                                 var disponibile = v.QtaMagazzino > 0;
                                 <button type="button"
                                         class="v-variant @(disponibile ? "" : "is-out")"
-                                        data-img="@v.UrlImmagine"
+                                        data-immagini="@string.Join("|", v.Immagini)"
                                         disabled="@(!disponibile)">
                                     @v.Taglia · @v.Colore
                                     @if (!disponibile)
@@ -403,12 +435,45 @@
     }
 
     <script>
-        document.querySelectorAll('.v-variant[data-img]').forEach(function (btn) {
+        function mostraImmagine(url) {
+            document.getElementById('mainImage').src = url;
+            document.querySelectorAll('#thumbStrip .v-thumb').forEach(function (thumb) {
+                thumb.classList.toggle('is-active', thumb.getAttribute('data-img') === url);
+            });
+        }
+
+        function rendiThumbStrip(urls) {
+            var strip = document.getElementById('thumbStrip');
+            strip.innerHTML = '';
+            if (urls.length < 2) return;
+            urls.forEach(function (url, indice) {
+                var img = document.createElement('img');
+                img.className = 'v-thumb' + (indice === 0 ? ' is-active' : '');
+                img.src = url;
+                img.setAttribute('data-img', url);
+                img.alt = 'miniatura';
+                img.addEventListener('click', function () {
+                    mostraImmagine(url);
+                });
+                strip.appendChild(img);
+            });
+        }
+
+        document.querySelectorAll('.v-variant[data-immagini]').forEach(function (btn) {
             btn.addEventListener('click', function () {
-                var url = btn.getAttribute('data-img');
-                if (url) document.getElementById('mainImage').src = url;
+                var urls = btn.getAttribute('data-immagini').split('|').filter(Boolean);
+                if (!urls.length) return;
+                mostraImmagine(urls[0]);
+                rendiThumbStrip(urls);
             });
         });
+
+        document.querySelectorAll('#thumbStrip .v-thumb').forEach(function (thumb) {
+            thumb.addEventListener('click', function () {
+                mostraImmagine(thumb.getAttribute('data-img'));
+            });
+        });
+
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 var popup = document.getElementById('gatingPopup');

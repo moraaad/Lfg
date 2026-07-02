@@ -1,0 +1,60 @@
+@page
+@using LFG.Web.Pages.VarianteProdotti
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@model ImmaginiModalModel
+@{
+    Layout = null;
+}
+<abp-modal id="VarianteProdottoImmaginiModal">
+    <abp-modal-header title="Gestisci immagini variante"></abp-modal-header>
+    <abp-modal-body>
+        <form id="ImmaginiUploadForm" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="varianteProdottoId" value="@Model.VarianteProdottoId" />
+            <div class="mb-3">
+                <label class="form-label">Nuove immagini (JPG, PNG o WEBP, max 5&nbsp;MB ciascuna, massimo 5 alla volta)</label>
+                <input type="file" name="files" id="ImmaginiFileInput" class="form-control" multiple accept="image/jpeg,image/png,image/webp" />
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm mb-3" id="ImmaginiUploadButton">
+                <i class="fa fa-upload"></i> Carica
+            </button>
+        </form>
+
+        <hr />
+
+        <div id="ImmaginiGalleria">
+            @if (!Model.Immagini.Any())
+            {
+                <p class="text-muted">Nessuna immagine caricata.</p>
+            }
+            else
+            {
+                for (var i = 0; i < Model.Immagini.Count; i++)
+                {
+                    var img = Model.Immagini[i];
+                    <div class="immagine-variante-item border rounded p-2 text-center d-inline-block me-2 mb-2" data-id="@img.Id" style="width:120px;">
+                        <div class="position-relative">
+                            <img src="@img.Url" alt="immagine variante" style="width:100px;height:100px;object-fit:cover;" />
+                            @if (i == 0)
+                            {
+                                <span class="badge bg-success position-absolute top-0 start-0">Principale</span>
+                            }
+                        </div>
+                        <div class="btn-group btn-group-sm mt-1" role="group">
+                            <button type="button" class="btn btn-outline-secondary btn-sposta" data-id="@img.Id" data-su="true" disabled="@(i == 0)">
+                                <i class="fa fa-arrow-up"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sposta" data-id="@img.Id" data-su="false" disabled="@(i == Model.Immagini.Count - 1)">
+                                <i class="fa fa-arrow-down"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-elimina" data-id="@img.Id">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </abp-modal-body>
+    <abp-modal-footer buttons="@AbpModalButtons.Cancel"></abp-modal-footer>
+</abp-modal>

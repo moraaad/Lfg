@@ -36,7 +36,7 @@ public abstract class EfCoreImmagineVarianteRepositoryBase : EfCoreRepository<LF
     {
         var query = await GetQueryForNavigationPropertiesAsync();
         query = ApplyFilter(query, filterText, varianteProdottoId, url, ordineMin, ordineMax);
-        query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? ImmagineVarianteConsts.GetDefaultSorting(true) : sorting);
+        query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? "ImmagineVariante.Ordine" : sorting);
         return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
     }
 

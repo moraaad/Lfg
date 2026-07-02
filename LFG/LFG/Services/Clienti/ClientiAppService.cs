@@ -139,6 +139,7 @@ public abstract class ClientiAppServiceBase : ApplicationService
         return cliente?.Sezione; // null se loggato ma senza Cliente
     }
 
+    [AllowAnonymous]
     public async Task VerificaAccessoSezioneAsync(string sezioneProdotto)
     {
         var sezioneUtente = await GetSezioneCorrenteAsync();
