@@ -297,7 +297,7 @@ public class LFGDbContext : AbpDbContext<LFGDbContext>
                 b.Property(x => x.VarianteProdottoId).HasColumnName(nameof(ImmagineVariante.VarianteProdottoId));
                 b.Property(x => x.Url).HasColumnName(nameof(ImmagineVariante.Url)).IsRequired().HasMaxLength(ImmagineVarianteConsts.UrlMaxLength);
                 b.Property(x => x.Ordine).HasColumnName(nameof(ImmagineVariante.Ordine));
-                b.HasOne<VarianteProdotto>().WithMany().HasForeignKey(x => x.VarianteProdottoId).OnDelete(DeleteBehavior.SetNull);
+                b.HasOne<VarianteProdotto>().WithMany().HasForeignKey(x => x.VarianteProdottoId).OnDelete(DeleteBehavior.Cascade);
             });
         }
     }
