@@ -69,6 +69,10 @@ public class LFGPermissionDefinitionProvider : PermissionDefinitionProvider
         elementoListaPermission.AddChild(LFGPermissions.ElementoListe.Create, L("Permission:Create"));
         elementoListaPermission.AddChild(LFGPermissions.ElementoListe.Edit, L("Permission:Edit"));
         elementoListaPermission.AddChild(LFGPermissions.ElementoListe.Delete, L("Permission:Delete"));
+        var immagineVariantePermission = myGroup.AddPermission(LFGPermissions.ImmagineVarianti.Default, L("Permission:ImmagineVarianti"));
+        immagineVariantePermission.AddChild(LFGPermissions.ImmagineVarianti.Create, L("Permission:Create"));
+        immagineVariantePermission.AddChild(LFGPermissions.ImmagineVarianti.Edit, L("Permission:Edit"));
+        immagineVariantePermission.AddChild(LFGPermissions.ImmagineVarianti.Delete, L("Permission:Delete"));
     }
 
     private static LocalizableString L(string name)

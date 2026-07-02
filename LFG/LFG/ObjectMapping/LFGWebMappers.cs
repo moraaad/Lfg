@@ -1,3 +1,10 @@
+using LFG.ImmagineVarianti;
+using LFG.Web.Pages.ImmagineVarianti;
+using LFG.ImmagineVarianti;
+using LFG.Web.Pages.ImmagineVarianti;
+using LFG.ImmagineVarianti;
+using LFG.Web.Pages.ImmagineVarianti;
+using LFG.ImmagineVarianti;
 using LFG.Clienti;
 using LFG.Web.Pages.Clienti;
 using LFG.ElementoListe;
@@ -682,4 +689,46 @@ public partial class ElementoListaCreateViewModelToElementoListaCreateDto : Mapp
 {
     public override partial ElementoListaCreateDto Map(ElementoListaCreateViewModel source);
     public override partial void Map(ElementoListaCreateViewModel source, ElementoListaCreateDto destination);
+}
+
+[Mapper]
+public partial class ImmagineVarianteToImmagineVarianteDtoMappers : MapperBase<ImmagineVariante, ImmagineVarianteDto>
+{
+    public override partial ImmagineVarianteDto Map(ImmagineVariante source);
+    public override partial void Map(ImmagineVariante source, ImmagineVarianteDto destination);
+}
+
+[Mapper]
+public partial class ImmagineVarianteToImmagineVarianteExcelDtoMappers : MapperBase<ImmagineVariante, ImmagineVarianteExcelDto>
+{
+    public override partial ImmagineVarianteExcelDto Map(ImmagineVariante source);
+    public override partial void Map(ImmagineVariante source, ImmagineVarianteExcelDto destination);
+}
+
+[Mapper]
+public partial class ImmagineVarianteWithNavigationPropertiesToImmagineVarianteWithNavigationPropertiesDtoMapper : MapperBase<ImmagineVarianteWithNavigationProperties, ImmagineVarianteWithNavigationPropertiesDto>
+{
+    public override partial ImmagineVarianteWithNavigationPropertiesDto Map(ImmagineVarianteWithNavigationProperties source);
+    public override partial void Map(ImmagineVarianteWithNavigationProperties source, ImmagineVarianteWithNavigationPropertiesDto destination);
+}
+
+[Mapper]
+public partial class ImmagineVarianteDtoToImmagineVarianteUpdateViewModelMapper : MapperBase<ImmagineVarianteDto, ImmagineVarianteUpdateViewModel>
+{
+    public override partial ImmagineVarianteUpdateViewModel Map(ImmagineVarianteDto source);
+    public override partial void Map(ImmagineVarianteDto source, ImmagineVarianteUpdateViewModel destination);
+}
+
+[Mapper]
+public partial class ImmagineVarianteUpdateViewModelToImmagineVarianteUpdateDto : MapperBase<ImmagineVarianteUpdateViewModel, ImmagineVarianteUpdateDto>
+{
+    public override partial ImmagineVarianteUpdateDto Map(ImmagineVarianteUpdateViewModel source);
+    public override partial void Map(ImmagineVarianteUpdateViewModel source, ImmagineVarianteUpdateDto destination);
+}
+
+[Mapper]
+public partial class ImmagineVarianteCreateViewModelToImmagineVarianteCreateDto : MapperBase<ImmagineVarianteCreateViewModel, ImmagineVarianteCreateDto>
+{
+    public override partial ImmagineVarianteCreateDto Map(ImmagineVarianteCreateViewModel source);
+    public override partial void Map(ImmagineVarianteCreateViewModel source, ImmagineVarianteCreateDto destination);
 }

@@ -1,10 +1,11 @@
 @page "{id:guid}"
 @model LFG.Pages.Vetrina.Prodotto.IndexModel
+@using LFG.Pages.Vetrina.Prodotto
+@using LFG.Recensioni
 @{
     Layout = null;
     var isLfg = string.Equals(Model.Sezione, "LFG", System.StringComparison.OrdinalIgnoreCase);
     var sezioneProdotto = Model.Sezione?.ToUpperInvariant() ?? "LFG";
-    var altreSezione = isLfg ? "GLF" : "LFG";
     ViewBag.Title = Model.Nome;
     var imgPrincipale = Model.Varianti.Any() ? Model.Varianti.First().UrlImmagine : "/images/placeholder.png";
 }
@@ -29,9 +30,7 @@
             align-items: center;
             justify-content: center;
         }
-        .v-popup-overlay.is-open {
-            display: flex;
-        }
+        .v-popup-overlay.is-open { display: flex; }
         .v-popup {
             background: #fff;
             max-width: 420px;
@@ -39,48 +38,152 @@
             padding: 2.5rem 2rem 2rem;
             position: relative;
         }
-        .shop--lfg .v-popup {
-            background: #111;
-            color: #f5f5f5;
-        }
+        .shop--lfg .v-popup { background: #111; color: #f5f5f5; }
         .v-popup__close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            line-height: 1;
-            color: inherit;
-            opacity: .55;
+            position: absolute; top: 1rem; right: 1rem;
+            background: none; border: none; cursor: pointer;
+            font-size: 1.2rem; line-height: 1; color: inherit; opacity: .55;
         }
         .v-popup__close:hover { opacity: 1; }
         .v-popup__eyebrow {
-            font-family: 'Space Mono', monospace;
-            font-size: .65rem;
-            letter-spacing: .12em;
-            opacity: .5;
-            text-transform: uppercase;
-            margin-bottom: .75rem;
+            font-family: 'Space Mono', monospace; font-size: .65rem;
+            letter-spacing: .12em; opacity: .5; text-transform: uppercase; margin-bottom: .75rem;
         }
         .v-popup__title {
+            font-family: 'Barlow', sans-serif; font-size: 1.3rem; font-weight: 800;
+            text-transform: uppercase; margin: 0 0 .75rem;
+        }
+        .v-popup__body { font-size: .9rem; line-height: 1.6; opacity: .8; margin-bottom: 1.5rem; }
+        .v-popup__actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+
+        /* ── Recensioni ──────────────────────────────────── */
+        .v-reviews {
+            padding: 4rem 0;
+            border-top: 1px solid rgba(128,128,128,.15);
+        }
+        .v-reviews__header {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .v-reviews__title {
             font-family: 'Barlow', sans-serif;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 800;
             text-transform: uppercase;
-            margin: 0 0 .75rem;
+            margin: 0;
         }
-        .v-popup__body {
-            font-size: .9rem;
-            line-height: 1.6;
-            opacity: .8;
-            margin-bottom: 1.5rem;
+        .v-reviews__count {
+            font-family: 'Space Mono', monospace;
+            font-size: .7rem;
+            letter-spacing: .08em;
+            opacity: .45;
+            text-transform: uppercase;
         }
-        .v-popup__actions {
+        /* Form */
+        .v-review-form {
+            border: 1px solid rgba(128,128,128,.2);
+            padding: 1.75rem 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .v-review-form__title {
+            font-family: 'Space Mono', monospace;
+            font-size: .7rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            opacity: .5;
+            margin: 0 0 1.25rem;
+        }
+        .v-review-form__stars {
             display: flex;
-            flex-wrap: wrap;
-            gap: .6rem;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: .25rem;
+            margin-bottom: 1.25rem;
+        }
+        .v-review-form__stars input[type="radio"] { display: none; }
+        .v-review-form__stars label {
+            font-size: 1.6rem;
+            cursor: pointer;
+            color: rgba(128,128,128,.3);
+            transition: color .15s;
+        }
+        .v-review-form__stars input:checked ~ label,
+        .v-review-form__stars label:hover,
+        .v-review-form__stars label:hover ~ label {
+            color: #c8a96e;
+        }
+        .v-review-form textarea {
+            width: 100%;
+            min-height: 90px;
+            padding: .75rem;
+            border: 1px solid rgba(128,128,128,.25);
+            background: transparent;
+            color: inherit;
+            font-family: inherit;
+            font-size: .9rem;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 1rem;
+        }
+        .v-review-form textarea:focus { outline: none; border-color: currentColor; }
+        /* Cards recensione */
+        .v-review-list { display: flex; flex-direction: column; gap: 1.25rem; }
+        .v-review {
+            padding: 1.25rem 1.5rem;
+            border-left: 3px solid rgba(128,128,128,.15);
+        }
+        .v-review.is-mine {
+            border-left-color: #c8a96e;
+            background: rgba(200,169,110,.04);
+        }
+        .v-review__meta {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            margin-bottom: .5rem;
+        }
+        .v-review__stars { color: #c8a96e; letter-spacing: .05em; }
+        .v-review__stars-empty { color: rgba(128,128,128,.3); }
+        .v-review__date {
+            font-family: 'Space Mono', monospace;
+            font-size: .65rem;
+            letter-spacing: .06em;
+            opacity: .4;
+        }
+        .v-review__mine-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: .6rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: #c8a96e;
+        }
+        .v-review__commento { font-size: .9rem; line-height: 1.65; opacity: .85; margin: 0; }
+        .v-review-empty {
+            font-family: 'Space Mono', monospace;
+            font-size: .75rem;
+            letter-spacing: .06em;
+            opacity: .35;
+            text-transform: uppercase;
+        }
+        /* Messaggi */
+        .v-msg {
+            padding: .85rem 1.25rem;
+            margin-bottom: 1.25rem;
+            font-size: .88rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+        }
+        .v-msg--ok    { border-left: 3px solid #5a9e6f; background: rgba(90,158,111,.07); }
+        .v-msg--error { border-left: 3px solid #c05252; background: rgba(192,82,82,.07); }
+        /* Recensione già inviata */
+        .v-review-done {
+            padding: 1rem 1.5rem;
+            border: 1px solid rgba(200,169,110,.3);
+            margin-bottom: 2.5rem;
+            font-size: .85rem;
+            opacity: .75;
         }
     </style>
 </head>
@@ -149,17 +252,121 @@
         </div>
     </section>
 
+    <!-- ══════════════════════════════════════════════════════════
+         RECENSIONI
+         ══════════════════════════════════════════════════════════ -->
+    <section class="v-reviews">
+        <div class="v-container">
+
+            <div class="v-reviews__header">
+                <h2 class="v-reviews__title">Recensioni</h2>
+                <span class="v-reviews__count">@Model.Recensioni.Count @(Model.Recensioni.Count == 1 ? "RECENSIONE" : "RECENSIONI")</span>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.MessaggioConferma))
+            {
+                <div class="v-msg v-msg--ok">@Model.MessaggioConferma</div>
+            }
+            @if (!string.IsNullOrEmpty(Model.MessaggioErrore))
+            {
+                <div class="v-msg v-msg--error">@Model.MessaggioErrore</div>
+            }
+
+            @if (Model.Stato == IndexModel.StatoRecensione.PuoRecensire)
+            {
+                <!-- Form inserimento -->
+                <form method="post" asp-page-handler="Recensione" class="v-review-form">
+                    @Html.AntiForgeryToken()
+                    <p class="v-review-form__title">Lascia la tua recensione</p>
+
+                    <div class="v-review-form__stars" role="radiogroup" aria-label="Valutazione">
+                        @for (int s = RecensioneConsts.ValutazioneMaxLength; s >= RecensioneConsts.ValutazioneMinLength; s--)
+                        {
+                            var sid = $"star{s}";
+                            <input type="radio" id="@sid" name="Valutazione" value="@s"
+                                   @(Model.Valutazione == s ? "checked" : "") />
+                            <label for="@sid" title="@s stelle">&#9733;</label>
+                        }
+                    </div>
+
+                    <textarea name="Commento" placeholder="Scrivi un commento (facoltativo)"
+                              maxlength="@RecensioneConsts.CommentoMaxLength">@Model.Commento</textarea>
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="v-msg v-msg--error" style="margin-top:-.5rem">
+                            <span asp-validation-for="Valutazione"></span>
+                            <span asp-validation-for="Commento"></span>
+                        </div>
+                    }
+
+                    <button type="submit" class="v-btn @(isLfg ? "v-btn--primary" : "v-btn--dark")">
+                        PUBBLICA RECENSIONE
+                    </button>
+                </form>
+            }
+            else if (Model.Stato == IndexModel.StatoRecensione.HaGiaRecensito)
+            {
+                <div class="v-review-done">
+                    Hai già inviato una recensione per questo prodotto. Scorrere in basso per visualizzarla.
+                </div>
+            }
+
+            <!-- Lista recensioni -->
+            @if (Model.Recensioni.Any())
+            {
+                <div class="v-review-list">
+                    @foreach (var r in Model.Recensioni)
+                    {
+                        <div class="v-review @(r.IsMia ? "is-mine" : "")">
+                            <div class="v-review__meta">
+                                <span class="v-review__stars" aria-label="@r.Valutazione stelle su 5">
+                                    @for (int i = 1; i <= RecensioneConsts.ValutazioneMaxLength; i++)
+                                    {
+                                        if (i <= r.Valutazione)
+                                        {
+                                            <span>&#9733;</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="v-review__stars-empty">&#9733;</span>
+                                        }
+                                    }
+                                </span>
+                                <span class="v-review__date">@r.DataRecensione.ToString("dd MMM yyyy")</span>
+                                @if (r.IsMia)
+                                {
+                                    <span class="v-review__mine-tag">La tua recensione</span>
+                                }
+                            </div>
+                            @if (!string.IsNullOrEmpty(r.Commento))
+                            {
+                                <p class="v-review__commento">@r.Commento</p>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="v-review-empty">Ancora nessuna recensione — sii il primo.</p>
+            }
+
+        </div>
+    </section>
+
     @if (!Model.PuoAgire)
     {
         <!-- Popup gating cross-sezione -->
         <div id="gatingPopup" class="v-popup-overlay" role="dialog" aria-modal="true"
              onclick="if(event.target===this)this.classList.remove('is-open')">
             <div class="v-popup">
-                <button class="v-popup__close" onclick="document.getElementById('gatingPopup').classList.remove('is-open')" aria-label="Chiudi">&times;</button>
+                <button class="v-popup__close"
+                        onclick="document.getElementById('gatingPopup').classList.remove('is-open')"
+                        aria-label="Chiudi">&times;</button>
 
                 @if (Model.SezioneUtente != null)
                 {
-                    <!-- Utente loggato ma sezione diversa -->
                     <p class="v-popup__eyebrow">Accesso riservato</p>
                     <h2 class="v-popup__title">Collezione @sezioneProdotto</h2>
                     <p class="v-popup__body">
@@ -179,7 +386,6 @@
                 }
                 else
                 {
-                    <!-- Utente anonimo -->
                     <p class="v-popup__eyebrow">Accesso richiesto</p>
                     <h2 class="v-popup__title">Accedi per acquistare</h2>
                     <p class="v-popup__body">
@@ -187,13 +393,9 @@
                         prodotti al carrello.
                     </p>
                     <div class="v-popup__actions">
-                        <a href="/Vetrina/Account/Login" class="v-btn v-btn--dark">
-                            ACCEDI &rarr;
-                        </a>
+                        <a href="/Vetrina/Account/Login" class="v-btn v-btn--dark">ACCEDI &rarr;</a>
                         <a href="/Vetrina/Account/Register?sezione=@sezioneProdotto"
-                           class="v-btn v-btn--outline">
-                            REGISTRATI
-                        </a>
+                           class="v-btn v-btn--outline">REGISTRATI</a>
                     </div>
                 }
             </div>

@@ -17,4 +17,5 @@ public class LFGMenus
     public const string Recensioni = Prefix + ".Recensioni";
     public const string RigaOrdini = Prefix + ".RigaOrdini";
     public const string ElementoListe = Prefix + ".ElementoListe";
+    public const string ImmagineVarianti = Prefix + ".ImmagineVarianti";
 }

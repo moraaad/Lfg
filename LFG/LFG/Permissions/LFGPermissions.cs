@@ -123,4 +123,12 @@ public static class LFGPermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
+
+    public static class ImmagineVarianti
+    {
+        public const string Default = GroupName + ".ImmagineVarianti";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
 }

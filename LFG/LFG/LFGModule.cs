@@ -1,3 +1,4 @@
+using LFG.ImmagineVarianti;
 using LFG.ElementoListe;
 using LFG.RigaOrdini;
 using LFG.Recensioni;
@@ -211,6 +212,7 @@ public class LFGModule : AbpModule
             options.Conventions.AuthorizePage("/Recensioni/Index", LFGPermissions.Recensioni.Default);
             options.Conventions.AuthorizePage("/RigaOrdini/Index", LFGPermissions.RigaOrdini.Default);
             options.Conventions.AuthorizePage("/ElementoListe/Index", LFGPermissions.ElementoListe.Default);
+            options.Conventions.AuthorizePage("/ImmagineVarianti/Index", LFGPermissions.ImmagineVarianti.Default);
         });
     }
 
@@ -412,6 +414,7 @@ public class LFGModule : AbpModule
             options.AddRepository<Recensione, Recensioni.EfCoreRecensioneRepository>();
             options.AddRepository<RigaOrdine, RigaOrdini.EfCoreRigaOrdineRepository>();
             options.AddRepository<ElementoLista, ElementoListe.EfCoreElementoListaRepository>();
+            options.AddRepository<ImmagineVariante, ImmagineVarianti.EfCoreImmagineVarianteRepository>();
         });
         Configure<AbpDbContextOptions>(options => {
             options.Configure(configurationContext => {

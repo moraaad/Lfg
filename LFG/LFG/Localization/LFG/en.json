@@ -209,6 +209,14 @@
     "MinDataAggiunta": "Min Data Aggiunta",
     "MaxDataAggiunta": "Max Data Aggiunta",
     "Menu:ElementoListe": "Elemento Liste",
-    "UserId": "User Id"
+    "UserId": "User Id",
+    "Permission:ImmagineVarianti": "Immagine Varianti",
+    "ImmagineVarianti": "Immagine Varianti",
+    "NewImmagineVariante": "New Immagine Variante",
+    "VarianteProdottoId": "Variante Prodotto Id",
+    "Url": "Url",
+    "MinOrdine": "Min Ordine",
+    "MaxOrdine": "Max Ordine",
+    "Menu:ImmagineVarianti": "Immagine Varianti"
   }
 }

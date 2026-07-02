@@ -1,3 +1,4 @@
+using LFG.ImmagineVarianti;
 using LFG.ElementoListe;
 using LFG.RigaOrdini;
 using LFG.Recensioni;
@@ -32,6 +33,7 @@ namespace LFG.Data;
 
 public class LFGDbContext : AbpDbContext<LFGDbContext>
 {
+    public DbSet<ImmagineVariante> ImmagineVarianti { get; set; } = null!;
     public DbSet<ElementoLista> ElementoListe { get; set; } = null!;
     public DbSet<RigaOrdine> RigaOrdini { get; set; } = null!;
     public DbSet<Recensione> Recensioni { get; set; } = null!;
@@ -276,6 +278,26 @@ public class LFGDbContext : AbpDbContext<LFGDbContext>
                 b.Property(x => x.Sezione).HasColumnName(nameof(Cliente.Sezione)).IsRequired().HasMaxLength(ClienteConsts.SezioneMaxLength);
                 b.Property(x => x.Nazionalita).HasColumnName(nameof(Cliente.Nazionalita)).IsRequired();
                 b.Property(x => x.UserId).HasColumnName(nameof(Cliente.UserId));
+            });
+        }
+
+        if (builder.IsHostDatabase())
+        {
+        }
+
+        if (builder.IsHostDatabase())
+        {
+        }
+
+        if (builder.IsHostDatabase())
+        {
+            builder.Entity<ImmagineVariante>(b => {
+                b.ToTable(DbTablePrefix + "ImmagineVarianti", DbSchema);
+                b.ConfigureByConvention();
+                b.Property(x => x.VarianteProdottoId).HasColumnName(nameof(ImmagineVariante.VarianteProdottoId));
+                b.Property(x => x.Url).HasColumnName(nameof(ImmagineVariante.Url)).IsRequired().HasMaxLength(ImmagineVarianteConsts.UrlMaxLength);
+                b.Property(x => x.Ordine).HasColumnName(nameof(ImmagineVariante.Ordine));
+                b.HasOne<VarianteProdotto>().WithMany().HasForeignKey(x => x.VarianteProdottoId).OnDelete(DeleteBehavior.SetNull);
             });
         }
     }

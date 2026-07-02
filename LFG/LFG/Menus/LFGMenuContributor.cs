@@ -60,6 +60,7 @@ public class LFGMenuContributor : IMenuContributor
         context.Menu.AddItem(new ApplicationMenuItem(LFGMenus.Recensioni, l["Menu:Recensioni"], url: "/Recensioni", icon: "fa fa-file-alt", requiredPermissionName: LFGPermissions.Recensioni.Default));
         context.Menu.AddItem(new ApplicationMenuItem(LFGMenus.RigaOrdini, l["Menu:RigaOrdini"], url: "/RigaOrdini", icon: "fa fa-file-alt", requiredPermissionName: LFGPermissions.RigaOrdini.Default));
         context.Menu.AddItem(new ApplicationMenuItem(LFGMenus.ElementoListe, l["Menu:ElementoListe"], url: "/ElementoListe", icon: "fa fa-file-alt", requiredPermissionName: LFGPermissions.ElementoListe.Default));
+        context.Menu.AddItem(new ApplicationMenuItem(LFGMenus.ImmagineVarianti, l["Menu:ImmagineVarianti"], url: "/ImmagineVarianti", icon: "fa fa-file-alt", requiredPermissionName: LFGPermissions.ImmagineVarianti.Default));
         return Task.CompletedTask;
     }
 }
