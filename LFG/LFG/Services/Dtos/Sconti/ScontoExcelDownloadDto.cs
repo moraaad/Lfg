@@ -28,6 +28,8 @@ public abstract class ScontoExcelDownloadDtoBase
 
     public DateTime? ValidoAlMax { get; set; }
 
+    public string? Sezione { get; set; }
+
     public ScontoExcelDownloadDtoBase()
     {
     }

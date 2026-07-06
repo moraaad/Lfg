@@ -20,5 +20,8 @@ public abstract class ScontoUpdateDtoBase : IHasConcurrencyStamp
 
     public DateTime ValidoAl { get; set; }
 
+    [Required]
+    [StringLength(ScontoConsts.SezioneMaxLength, MinimumLength = ScontoConsts.SezioneMinLength)]
+    public string Sezione { get; set; } = null!;
     public string ConcurrencyStamp { get; set; } = null!;
 }

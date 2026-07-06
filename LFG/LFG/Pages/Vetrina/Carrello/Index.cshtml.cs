@@ -11,6 +11,8 @@ using LFG.VarianteProdotti;
 using LFG.Ordini;
 using LFG.RigaOrdini;
 using LFG.Clienti;
+using LFG.Sconti;
+using LFG.Helpers;
 
 namespace LFG.Pages.Vetrina.Carrello;
 
@@ -22,19 +24,22 @@ public class IndexModel : PageModel
     private readonly IRepository<RigaOrdine, Guid> _rigaOrdineRepo;
     private readonly IRepository<VarianteProdotto, Guid> _varianteRepo;
     private readonly IRepository<LFG.Prodotti.Prodotto, Guid> _prodottoRepo;
+    private readonly IRepository<Sconto, Guid> _scontoRepo;
 
     public IndexModel(
         IClientiAppService clientiAppService,
         IRepository<Ordine, Guid> ordineRepo,
         IRepository<RigaOrdine, Guid> rigaOrdineRepo,
         IRepository<VarianteProdotto, Guid> varianteRepo,
-        IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo)
+        IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo,
+        IRepository<Sconto, Guid> scontoRepo)
     {
         _clientiAppService = clientiAppService;
         _ordineRepo         = ordineRepo;
         _rigaOrdineRepo     = rigaOrdineRepo;
         _varianteRepo       = varianteRepo;
         _prodottoRepo       = prodottoRepo;
+        _scontoRepo         = scontoRepo;
     }
 
     public bool Autenticato { get; set; }
@@ -45,7 +50,13 @@ public class IndexModel : PageModel
 
     public List<RigaVista> Righe { get; set; } = new();
     public decimal Totale { get; set; }
+    public decimal TotaleFinale { get; set; }
+    public Sconto? ScontoApplicato { get; set; }
     public string? MessaggioErrore { get; set; }
+    public string? MessaggioConferma { get; set; }
+
+    [BindProperty]
+    public string CodiceSconto { get; set; } = "";
 
     public async Task<IActionResult> OnGetAsync()
     {
@@ -114,6 +125,63 @@ public class IndexModel : PageModel
         return RedirectToPage();
     }
 
+    public async Task<IActionResult> OnPostApplicaScontoAsync()
+    {
+        Autenticato = User.Identity?.IsAuthenticated == true;
+        var cliente = await _clientiAppService.GetClienteCorrenteAsync();
+        if (cliente == null)
+            return RedirectToPage();
+
+        var ordine = await _ordineRepo.FirstOrDefaultAsync(o => o.ClienteId == cliente.Id && o.Stato == "Bozza");
+        if (ordine == null)
+        {
+            MessaggioErrore = "Il carrello è vuoto.";
+            await CaricaCarrelloAsync(cliente.Id);
+            return Page();
+        }
+
+        var codice = (CodiceSconto ?? "").Trim();
+        var sconto = await _scontoRepo.FirstOrDefaultAsync(s => s.Codice == codice);
+        if (sconto == null)
+        {
+            MessaggioErrore = "Codice sconto non valido.";
+            await CaricaCarrelloAsync(cliente.Id);
+            return Page();
+        }
+
+        var (valido, errore) = await ScontoHelper.ValidaAsync(sconto, cliente.Sezione, DateTime.UtcNow, _ordineRepo);
+        if (!valido)
+        {
+            MessaggioErrore = errore;
+            await CaricaCarrelloAsync(cliente.Id);
+            return Page();
+        }
+
+        // Un solo sconto per ordine: quello nuovo sostituisce l'eventuale precedente
+        ordine.ScontoId = sconto.Id;
+        await _ordineRepo.UpdateAsync(ordine, autoSave: true);
+
+        MessaggioConferma = $"Codice sconto \"{sconto.Codice}\" applicato.";
+        await CaricaCarrelloAsync(cliente.Id);
+        return Page();
+    }
+
+    public async Task<IActionResult> OnPostRimuoviScontoAsync()
+    {
+        var cliente = await _clientiAppService.GetClienteCorrenteAsync();
+        if (cliente == null)
+            return RedirectToPage();
+
+        var ordine = await _ordineRepo.FirstOrDefaultAsync(o => o.ClienteId == cliente.Id && o.Stato == "Bozza");
+        if (ordine != null && ordine.ScontoId.HasValue)
+        {
+            ordine.ScontoId = null;
+            await _ordineRepo.UpdateAsync(ordine, autoSave: true);
+        }
+
+        return RedirectToPage();
+    }
+
     private async Task<bool> AppartieneABozzaDelClienteAsync(RigaOrdine riga, Guid clienteId)
     {
         if (!riga.OrdineId.HasValue)
@@ -159,5 +227,16 @@ public class IndexModel : PageModel
             .ToList();
 
         Totale = Righe.Sum(r => r.Subtotale);
+        TotaleFinale = Totale;
+
+        if (ordine.ScontoId.HasValue)
+        {
+            var sconto = await _scontoRepo.FindAsync(ordine.ScontoId.Value);
+            if (sconto != null)
+            {
+                ScontoApplicato = sconto;
+                TotaleFinale = ScontoHelper.Calcola(sconto, Totale);
+            }
+        }
     }
 }

@@ -34,6 +34,8 @@ public abstract class IndexModelBase : AbpPageModel
 
     public DateTime? ValidoAlFilterMax { get; set; }
 
+    public string? SezioneFilter { get; set; }
+
     protected IScontiAppService _scontiAppService;
 
     public IndexModelBase(IScontiAppService scontiAppService)

@@ -13,6 +13,8 @@ using LFG.VarianteProdotti;
 using LFG.Ordini;
 using LFG.RigaOrdini;
 using LFG.Clienti;
+using LFG.Sconti;
+using LFG.Helpers;
 
 namespace LFG.Pages.Vetrina.Carrello;
 
@@ -24,19 +26,22 @@ public class CheckoutModel : PageModel
     private readonly IRepository<RigaOrdine, Guid> _rigaOrdineRepo;
     private readonly IRepository<VarianteProdotto, Guid> _varianteRepo;
     private readonly IRepository<LFG.Prodotti.Prodotto, Guid> _prodottoRepo;
+    private readonly IRepository<Sconto, Guid> _scontoRepo;
 
     public CheckoutModel(
         IClientiAppService clientiAppService,
         IRepository<Ordine, Guid> ordineRepo,
         IRepository<RigaOrdine, Guid> rigaOrdineRepo,
         IRepository<VarianteProdotto, Guid> varianteRepo,
-        IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo)
+        IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo,
+        IRepository<Sconto, Guid> scontoRepo)
     {
         _clientiAppService = clientiAppService;
         _ordineRepo         = ordineRepo;
         _rigaOrdineRepo     = rigaOrdineRepo;
         _varianteRepo       = varianteRepo;
         _prodottoRepo       = prodottoRepo;
+        _scontoRepo         = scontoRepo;
     }
 
     public bool Autenticato { get; set; }
@@ -47,6 +52,8 @@ public class CheckoutModel : PageModel
 
     public List<RigaVista> Righe { get; set; } = new();
     public decimal Totale { get; set; }
+    public decimal TotaleFinale { get; set; }
+    public Sconto? ScontoApplicato { get; set; }
     public string? MessaggioErrore { get; set; }
     public List<string> RigheKO { get; set; } = new();
 
@@ -154,10 +161,32 @@ public class CheckoutModel : PageModel
             await _varianteRepo.UpdateAsync(variante);
         }
 
+        // Ri-valida lo sconto (potrebbe essere scaduto o aver raggiunto il limite
+        // tra l'applicazione nel carrello e la conferma): se non è più valido lo si
+        // rimuove e si ricalcola il totale pieno, avvisando l'utente dopo il redirect.
+        var totaleFinale = righe.Sum(r => r.PrezzoUnitario * r.Quantita);
+        if (ordine.ScontoId.HasValue)
+        {
+            var sconto = await _scontoRepo.FindAsync(ordine.ScontoId.Value);
+            var (valido, _) = sconto != null
+                ? await ScontoHelper.ValidaAsync(sconto, cliente.Sezione, DateTime.UtcNow, _ordineRepo)
+                : (false, null);
+
+            if (valido && sconto != null)
+            {
+                totaleFinale = ScontoHelper.Calcola(sconto, totaleFinale);
+            }
+            else
+            {
+                ordine.ScontoId = null;
+                TempData["AvvisoSconto"] = "Il codice sconto applicato non è più valido: il totale è stato ricalcolato senza sconto.";
+            }
+        }
+
         ordine.Stato = "Confermato";
         ordine.IndSpedizione = IndSpedizione;
         ordine.MetodoPagamento = MetodoPagamento;
-        ordine.ImportoTotale = righe.Sum(r => r.PrezzoUnitario * r.Quantita);
+        ordine.ImportoTotale = totaleFinale;
         ordine.DataOrdine = DateTime.UtcNow;
         await _ordineRepo.UpdateAsync(ordine);
 
@@ -198,5 +227,16 @@ public class CheckoutModel : PageModel
             .ToList();
 
         Totale = Righe.Sum(r => r.Subtotale);
+        TotaleFinale = Totale;
+
+        if (ordine.ScontoId.HasValue)
+        {
+            var sconto = await _scontoRepo.FindAsync(ordine.ScontoId.Value);
+            if (sconto != null)
+            {
+                ScontoApplicato = sconto;
+                TotaleFinale = ScontoHelper.Calcola(sconto, Totale);
+            }
+        }
     }
 }

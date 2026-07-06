@@ -28,6 +28,7 @@ $(function () {
             validoDalMax: $('#ValidoDalFilterMax').val(),
             validoAlMin: $('#ValidoAlFilterMin').val(),
             validoAlMax: $('#ValidoAlFilterMax').val(),
+            sezione: $('#SezioneFilter').val(),
         };
     };
 
@@ -88,6 +89,7 @@ $(function () {
                 return new Date(date).toLocaleDateString(abp.localization.currentCulture.name);
             },
         },
+        { data: 'sezione' },
     ];
 
     if (abp.auth.isGranted('LFG.Sconti.Delete')) {
@@ -301,6 +303,7 @@ $(function () {
                     { name: 'validoDalMax', value: input.validoDalMax },
                     { name: 'validoAlMin', value: input.validoAlMin },
                     { name: 'validoAlMax', value: input.validoAlMax },
+                    { name: 'sezione', value: input.sezione },
                 ]);
 
             var downloadWindow = window.open(url, '_blank');

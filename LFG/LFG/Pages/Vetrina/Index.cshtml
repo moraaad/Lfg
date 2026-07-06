@@ -19,38 +19,7 @@
     <!-- ======================================================
          NAVBAR FIXED
          ====================================================== -->
-    <header class="v-header">
-        <div class="v-container v-header__inner">
-            <a class="v-logo" href="/Vetrina">
-                <span class="v-logo__name">LFG | GLF</span>
-                <span class="v-logo__tagline">Life is Good · Good Life is Better</span>
-            </a>
-            <nav class="v-nav">
-                <a href="#">STUDIO</a>
-                <a href="#">COLLEZIONI</a>
-                <a href="/Vetrina/Shop?sezione=LFG">LFG</a>
-                <a href="/Vetrina/Shop?sezione=GLF">GLF</a>
-                <a href="#">CONTATTI</a>
-            </nav>
-            <div class="v-header__actions">
-                @if (User.Identity?.IsAuthenticated == true)
-                {
-                    <span class="v-header__user">@User.Identity.Name</span>
-                    <a href="/Vetrina/Account/Logout" class="v-btn v-btn--outline">ESCI &rarr;</a>
-                }
-                else
-                {
-                    <a href="/Vetrina/Account/Login" class="v-icon-btn" aria-label="Accedi">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                    </a>
-                    <a href="/Vetrina/Account/Login" class="v-btn v-btn--dark">ACCEDI &rarr;</a>
-                }
-            </div>
-        </div>
-    </header>
+    <partial name="Account/_VetrinaNavbar" />
 
     <!-- ======================================================
          HERO
@@ -146,91 +115,48 @@
                 <a href="/Vetrina/Shop?sezione=GLF" class="v-link-arrow">VEDI TUTTO &rarr;</a>
             </div>
 
-            <div class="v-grid">
-                <div class="v-card v-card--glf">
-                    <div class="v-card__img-wrap">
-                        <img src="/images/glf_overcoat_1.png" alt="Cappotto Overcoat" />
-                    </div>
-                    <div class="v-card__caption">
-                        <div class="v-card__meta">
-                            <span class="v-card__brand">GLF</span>
-                            <span class="v-card__price">&euro; 890</span>
-                        </div>
-                        <span class="v-card__name">Cappotto Overcoat</span>
-                    </div>
+            @if (Model.InEvidenzaGlf.Any())
+            {
+                <div class="v-grid">
+                    @foreach (var p in Model.InEvidenzaGlf)
+                    {
+                        <a class="v-card v-card--glf" href="/Vetrina/Prodotto/@p.Id">
+                            <div class="v-card__img-wrap">
+                                <img src="@p.UrlImmagine" alt="@p.Nome" />
+                            </div>
+                            <div class="v-card__caption">
+                                <div class="v-card__meta">
+                                    <span class="v-card__brand">GLF</span>
+                                    <span class="v-card__price">&euro; @p.Prezzo</span>
+                                </div>
+                                <span class="v-card__name">@p.Nome</span>
+                            </div>
+                        </a>
+                    }
                 </div>
-
-                <div class="v-card v-card--glf">
-                    <div class="v-card__img-wrap">
-                        <span class="v-badge">NUOVO</span>
-                        <img src="/images/GLF_blazer_1.png" alt="Blazer Classico" />
-                    </div>
-                    <div class="v-card__caption">
-                        <div class="v-card__meta">
-                            <span class="v-card__brand">GLF</span>
-                            <span class="v-card__price">&euro; 650</span>
-                        </div>
-                        <span class="v-card__name">Blazer Classico</span>
-                    </div>
-                </div>
-
-                <div class="v-card v-card--glf">
-                    <div class="v-card__img-wrap">
-                        <img src="/images/glf_knit_1.png" alt="Maglia V-Neck" />
-                    </div>
-                    <div class="v-card__caption">
-                        <div class="v-card__meta">
-                            <span class="v-card__brand">GLF</span>
-                            <span class="v-card__price">&euro; 220</span>
-                        </div>
-                        <span class="v-card__name">Maglia V-Neck</span>
-                    </div>
-                </div>
-            </div>
+            }
 
             <!-- LFG — selezione scura -->
-            <div class="v-grid" style="margin-top: var(--gap);">
-                <div class="v-card v-card--lfg">
-                    <div class="v-card__img-wrap">
-                        <span class="v-badge">NUOVO</span>
-                        <img src="/images/lfg_bomber_1.png" alt="LFG Leather Bomber" />
-                    </div>
-                    <div class="v-card__caption">
-                        <div class="v-card__meta">
-                            <span class="v-card__brand">LFG</span>
-                            <span class="v-card__price">&euro; 589</span>
-                        </div>
-                        <span class="v-card__name">LFG Leather Bomber</span>
-                    </div>
+            @if (Model.InEvidenzaLfg.Any())
+            {
+                <div class="v-grid" style="margin-top: var(--gap);">
+                    @foreach (var p in Model.InEvidenzaLfg)
+                    {
+                        <a class="v-card v-card--lfg" href="/Vetrina/Prodotto/@p.Id">
+                            <div class="v-card__img-wrap">
+                                <img src="@p.UrlImmagine" alt="@p.Nome" />
+                            </div>
+                            <div class="v-card__caption">
+                                <div class="v-card__meta">
+                                    <span class="v-card__brand">LFG</span>
+                                    <span class="v-card__price">&euro; @p.Prezzo</span>
+                                </div>
+                                <span class="v-card__name">@p.Nome</span>
+                            </div>
+                        </a>
+                    }
                 </div>
-
-                <div class="v-card v-card--lfg">
-                    <div class="v-card__img-wrap">
-                        <img src="/images/lfg_tee.png" alt="LFG Essential Tee" />
-                    </div>
-                    <div class="v-card__caption">
-                        <div class="v-card__meta">
-                            <span class="v-card__brand">LFG</span>
-                            <span class="v-card__price">&euro; 120</span>
-                        </div>
-                        <span class="v-card__name">LFG Essential Tee</span>
-                    </div>
-                </div>
-
-                <div class="v-card v-card--lfg">
-                    <div class="v-card__img-wrap">
-                        <span class="v-badge">NUOVO</span>
-                        <img src="/images/lfg_hoodie.png" alt="LFG Fleece Hoodie" />
-                    </div>
-                    <div class="v-card__caption">
-                        <div class="v-card__meta">
-                            <span class="v-card__brand">LFG</span>
-                            <span class="v-card__price">&euro; 285</span>
-                        </div>
-                        <span class="v-card__name">LFG Fleece Hoodie</span>
-                    </div>
-                </div>
-            </div>
+            }
 
         </div>
     </section>

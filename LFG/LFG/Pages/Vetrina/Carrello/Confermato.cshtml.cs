@@ -11,6 +11,7 @@ using LFG.VarianteProdotti;
 using LFG.Ordini;
 using LFG.RigaOrdini;
 using LFG.Clienti;
+using LFG.Sconti;
 
 namespace LFG.Pages.Vetrina.Carrello;
 
@@ -22,25 +23,30 @@ public class ConfermatoModel : PageModel
     private readonly IRepository<RigaOrdine, Guid> _rigaOrdineRepo;
     private readonly IRepository<VarianteProdotto, Guid> _varianteRepo;
     private readonly IRepository<LFG.Prodotti.Prodotto, Guid> _prodottoRepo;
+    private readonly IRepository<Sconto, Guid> _scontoRepo;
 
     public ConfermatoModel(
         IClientiAppService clientiAppService,
         IRepository<Ordine, Guid> ordineRepo,
         IRepository<RigaOrdine, Guid> rigaOrdineRepo,
         IRepository<VarianteProdotto, Guid> varianteRepo,
-        IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo)
+        IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo,
+        IRepository<Sconto, Guid> scontoRepo)
     {
         _clientiAppService = clientiAppService;
         _ordineRepo         = ordineRepo;
         _rigaOrdineRepo     = rigaOrdineRepo;
         _varianteRepo       = varianteRepo;
         _prodottoRepo       = prodottoRepo;
+        _scontoRepo         = scontoRepo;
     }
 
     public bool Autenticato { get; set; }
     public bool Trovato { get; set; }
     public string? IndSpedizione { get; set; }
     public string? MetodoPagamento { get; set; }
+    public string? ScontoCodice { get; set; }
+    public string? AvvisoSconto { get; set; }
     public DateTime DataOrdine { get; set; }
     public decimal Totale { get; set; }
 
@@ -49,12 +55,16 @@ public class ConfermatoModel : PageModel
         decimal PrezzoUnitario, int Quantita, decimal Subtotale);
 
     public List<RigaVista> Righe { get; set; } = new();
+    public decimal Subtotale => Righe.Sum(r => r.Subtotale);
 
     public async Task<IActionResult> OnGetAsync(Guid id)
     {
         Autenticato = User.Identity?.IsAuthenticated == true;
         if (!Autenticato)
             return Page();
+
+        if (TempData["AvvisoSconto"] is string avviso)
+            AvvisoSconto = avviso;
 
         var cliente = await _clientiAppService.GetClienteCorrenteAsync();
         if (cliente == null)
@@ -69,6 +79,12 @@ public class ConfermatoModel : PageModel
         MetodoPagamento = ordine.MetodoPagamento;
         DataOrdine = ordine.DataOrdine;
         Totale = ordine.ImportoTotale;
+
+        if (ordine.ScontoId.HasValue)
+        {
+            var sconto = await _scontoRepo.FindAsync(ordine.ScontoId.Value);
+            ScontoCodice = sconto?.Codice;
+        }
 
         var righe = await _rigaOrdineRepo.GetListAsync(r => r.OrdineId == ordine.Id);
         var varianteIds = righe.Where(r => r.VarianteProdottoId.HasValue).Select(r => r.VarianteProdottoId!.Value).ToList();

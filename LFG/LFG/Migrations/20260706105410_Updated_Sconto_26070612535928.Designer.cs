@@ -4,6 +4,7 @@ using LFG.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace LFG.Migrations
 {
     [DbContext(typeof(LFGDbContext))]
-    partial class LFGDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260706105410_Updated_Sconto_26070612535928")]
+    partial class Updated_Sconto_26070612535928
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

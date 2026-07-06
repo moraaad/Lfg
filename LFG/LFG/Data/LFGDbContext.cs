@@ -104,16 +104,6 @@ public class LFGDbContext : AbpDbContext<LFGDbContext>
 
         if (builder.IsHostDatabase())
         {
-            builder.Entity<Sconto>(b => {
-                b.ToTable(DbTablePrefix + "Sconti", DbSchema);
-                b.ConfigureByConvention();
-                b.Property(x => x.Codice).HasColumnName(nameof(Sconto.Codice)).IsRequired().HasMaxLength(ScontoConsts.CodiceMaxLength);
-                b.Property(x => x.Tipo).HasColumnName(nameof(Sconto.Tipo));
-                b.Property(x => x.Valore).HasColumnName(nameof(Sconto.Valore));
-                b.Property(x => x.LimiteUtilizzi).HasColumnName(nameof(Sconto.LimiteUtilizzi));
-                b.Property(x => x.ValidoDal).HasColumnName(nameof(Sconto.ValidoDal));
-                b.Property(x => x.ValidoAl).HasColumnName(nameof(Sconto.ValidoAl));
-            });
         }
 
         if (builder.IsHostDatabase())
@@ -298,6 +288,25 @@ public class LFGDbContext : AbpDbContext<LFGDbContext>
                 b.Property(x => x.Url).HasColumnName(nameof(ImmagineVariante.Url)).IsRequired().HasMaxLength(ImmagineVarianteConsts.UrlMaxLength);
                 b.Property(x => x.Ordine).HasColumnName(nameof(ImmagineVariante.Ordine));
                 b.HasOne<VarianteProdotto>().WithMany().HasForeignKey(x => x.VarianteProdottoId).OnDelete(DeleteBehavior.Cascade);
+            });
+        }
+
+        if (builder.IsHostDatabase())
+        {
+        }
+
+        if (builder.IsHostDatabase())
+        {
+            builder.Entity<Sconto>(b => {
+                b.ToTable(DbTablePrefix + "Sconti", DbSchema);
+                b.ConfigureByConvention();
+                b.Property(x => x.Codice).HasColumnName(nameof(Sconto.Codice)).IsRequired().HasMaxLength(ScontoConsts.CodiceMaxLength);
+                b.Property(x => x.Tipo).HasColumnName(nameof(Sconto.Tipo));
+                b.Property(x => x.Valore).HasColumnName(nameof(Sconto.Valore));
+                b.Property(x => x.LimiteUtilizzi).HasColumnName(nameof(Sconto.LimiteUtilizzi));
+                b.Property(x => x.ValidoDal).HasColumnName(nameof(Sconto.ValidoDal));
+                b.Property(x => x.ValidoAl).HasColumnName(nameof(Sconto.ValidoAl));
+                b.Property(x => x.Sezione).HasColumnName(nameof(Sconto.Sezione)).IsRequired().HasMaxLength(ScontoConsts.SezioneMaxLength);
             });
         }
     }

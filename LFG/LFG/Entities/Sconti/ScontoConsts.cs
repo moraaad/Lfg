@@ -11,4 +11,6 @@ public static class ScontoConsts
 
     public const int CodiceMinLength = 2;
     public const int CodiceMaxLength = 50;
+    public const int SezioneMinLength = 2;
+    public const int SezioneMaxLength = 3;
 }

@@ -116,6 +116,34 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
+        .v-cart-coupon {
+            display: flex;
+            gap: .6rem;
+            margin-bottom: 1.5rem;
+        }
+        .v-cart-coupon input[type="text"] {
+            flex: 1 1 auto;
+            max-width: 260px;
+            padding: .65rem .85rem;
+            border: 1px solid rgba(128,128,128,.25);
+            background: transparent;
+            color: inherit;
+            font-family: inherit;
+            font-size: .9rem;
+        }
+        .v-cart-summary--sub {
+            font-size: .85rem;
+            opacity: .75;
+            margin-bottom: .5rem;
+            padding-top: 0;
+        }
+        .v-cart-summary--sub .v-cart-coupon__remove {
+            display: inline-flex;
+            margin-left: .5rem;
+        }
+        .v-cart-summary--sub .v-cart-row__remove {
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body class="vetrina">
@@ -126,6 +154,19 @@
         <div class="v-container">
             <h1 class="v-section-title">Carrello</h1>
 
+            @if (!string.IsNullOrEmpty(Model.MessaggioConferma))
+            {
+                <div class="v-msg v-msg--ok" role="status" data-autohide="4500">
+                    <span class="v-msg__icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="M8.5 12.5l2.5 2.5 5-5" />
+                        </svg>
+                    </span>
+                    <span>@Model.MessaggioConferma</span>
+                    <button type="button" class="v-msg__close" aria-label="Chiudi">&times;</button>
+                </div>
+            }
             @if (!string.IsNullOrEmpty(Model.MessaggioErrore))
             {
                 <div class="v-msg v-msg--error" role="alert" data-autohide="6000">
@@ -179,9 +220,31 @@
                     }
                 </div>
 
+                <form method="post" asp-page-handler="ApplicaSconto" class="v-cart-coupon">
+                    @Html.AntiForgeryToken()
+                    <input type="text" name="CodiceSconto" placeholder="Codice sconto" maxlength="50" value="@Model.CodiceSconto" />
+                    <button type="submit" class="v-btn v-btn--outline">APPLICA</button>
+                </form>
+
+                @if (Model.ScontoApplicato != null)
+                {
+                    <div class="v-cart-summary v-cart-summary--sub">
+                        <span class="v-cart-summary__label">Subtotale</span>
+                        <span>€ @PrezzoHelper.ToCanonico(Model.Totale)</span>
+                    </div>
+                    <div class="v-cart-summary v-cart-summary--sub">
+                        <span class="v-cart-summary__label">Sconto (@Model.ScontoApplicato.Codice)</span>
+                        <span>&minus; € @PrezzoHelper.ToCanonico(Model.Totale - Model.TotaleFinale)</span>
+                        <form method="post" asp-page-handler="RimuoviSconto" class="v-cart-coupon__remove">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="v-cart-row__remove" title="Rimuovi sconto" aria-label="Rimuovi sconto">&times;</button>
+                        </form>
+                    </div>
+                }
+
                 <div class="v-cart-summary">
                     <span class="v-cart-summary__label">Totale</span>
-                    <span class="v-cart-summary__total">€ @PrezzoHelper.ToCanonico(Model.Totale)</span>
+                    <span class="v-cart-summary__total">€ @PrezzoHelper.ToCanonico(Model.TotaleFinale)</span>
                 </div>
 
                 <div class="v-cart-actions">

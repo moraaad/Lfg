@@ -18,5 +18,6 @@ public abstract class ScontoDtoBase : FullAuditedEntityDto<Guid>, IHasConcurrenc
 
     public DateTime ValidoAl { get; set; }
 
+    public string Sezione { get; set; } = null!;
     public string ConcurrencyStamp { get; set; } = null!;
 }

@@ -14,4 +14,6 @@ public abstract class ScontoExcelDtoBase
     public DateTime ValidoDal { get; set; }
 
     public DateTime ValidoAl { get; set; }
+
+    public string Sezione { get; set; } = null!;
 }

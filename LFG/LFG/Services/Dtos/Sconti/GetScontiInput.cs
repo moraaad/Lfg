@@ -27,6 +27,8 @@ public abstract class GetScontiInputBase : PagedAndSortedResultRequestDto
 
     public DateTime? ValidoAlMax { get; set; }
 
+    public string? Sezione { get; set; }
+
     public GetScontiInputBase()
     {
     }

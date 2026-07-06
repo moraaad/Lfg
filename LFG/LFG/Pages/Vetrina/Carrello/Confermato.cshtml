@@ -85,6 +85,21 @@
             }
             else
             {
+                @if (!string.IsNullOrEmpty(Model.AvvisoSconto))
+                {
+                    <div class="v-msg v-msg--error" role="alert" data-autohide="8000">
+                        <span class="v-msg__icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9" />
+                                <line x1="12" y1="8" x2="12" y2="13" />
+                                <line x1="12" y1="16.5" x2="12" y2="16.51" />
+                            </svg>
+                        </span>
+                        <span>@Model.AvvisoSconto</span>
+                        <button type="button" class="v-msg__close" aria-label="Chiudi">&times;</button>
+                    </div>
+                }
+
                 <div class="v-confirm-meta">
                     <span>Data ordine: @Model.DataOrdine.ToString("dd MMM yyyy HH:mm")</span>
                     <span>Spedizione a: @Model.IndSpedizione</span>
@@ -102,6 +117,18 @@
                     </div>
                 }
 
+                @if (!string.IsNullOrEmpty(Model.ScontoCodice))
+                {
+                    <div class="v-confirm-row">
+                        <span>Subtotale</span>
+                        <span>€ @PrezzoHelper.ToCanonico(Model.Subtotale)</span>
+                    </div>
+                    <div class="v-confirm-row">
+                        <span>Sconto (@Model.ScontoCodice)</span>
+                        <span>&minus; € @PrezzoHelper.ToCanonico(Model.Subtotale - Model.Totale)</span>
+                    </div>
+                }
+
                 <div class="v-confirm-total">
                     <span class="v-confirm-total__label">Totale</span>
                     <span class="v-confirm-total__value">€ @PrezzoHelper.ToCanonico(Model.Totale)</span>
@@ -111,6 +138,21 @@
             }
         </div>
     </section>
+
+    <script>
+        document.querySelectorAll('.v-msg').forEach(function (msg) {
+            var nascondi = function () {
+                msg.classList.add('is-leaving');
+                setTimeout(function () { msg.style.display = 'none'; }, 250);
+            };
+
+            var closeBtn = msg.querySelector('.v-msg__close');
+            if (closeBtn) closeBtn.addEventListener('click', nascondi);
+
+            var autohide = parseInt(msg.getAttribute('data-autohide'), 10);
+            if (autohide) setTimeout(nascondi, autohide);
+        });
+    </script>
 
 </body>
 </html>

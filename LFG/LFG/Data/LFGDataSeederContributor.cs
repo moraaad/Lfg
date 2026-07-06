@@ -107,6 +107,7 @@ public class LFGDataSeedContributor : IDataSeedContributor, ITransientDependency
                 10m,
                 DateTime.Now,
                 DateTime.Now.AddMonths(3),
+                "LFG",
                 "percentuale",
                 100
             ), autoSave: true);

@@ -19,27 +19,32 @@ public abstract class ScontoManagerBase : DomainService
         _scontoRepository = scontoRepository;
     }
 
-    public virtual async Task<Sconto> CreateAsync(string codice, decimal valore, DateTime validoDal, DateTime validoAl, string? tipo = null, int? limiteUtilizzi = null)
+    public virtual async Task<Sconto> CreateAsync(string codice, decimal valore, DateTime validoDal, DateTime validoAl, string sezione, string? tipo = null, int? limiteUtilizzi = null)
     {
         Check.NotNullOrWhiteSpace(codice, nameof(codice));
         Check.Length(codice, nameof(codice), ScontoConsts.CodiceMaxLength, ScontoConsts.CodiceMinLength);
         Check.NotNull(validoDal, nameof(validoDal));
         Check.NotNull(validoAl, nameof(validoAl));
-        var sconto = new Sconto(GuidGenerator.Create(), codice, valore, validoDal, validoAl, tipo, limiteUtilizzi);
+        Check.NotNullOrWhiteSpace(sezione, nameof(sezione));
+        Check.Length(sezione, nameof(sezione), ScontoConsts.SezioneMaxLength, ScontoConsts.SezioneMinLength);
+        var sconto = new Sconto(GuidGenerator.Create(), codice, valore, validoDal, validoAl, sezione, tipo, limiteUtilizzi);
         return await _scontoRepository.InsertAsync(sconto);
     }
 
-    public virtual async Task<Sconto> UpdateAsync(Guid id, string codice, decimal valore, DateTime validoDal, DateTime validoAl, string? tipo = null, int? limiteUtilizzi = null, [CanBeNull] string? concurrencyStamp = null)
+    public virtual async Task<Sconto> UpdateAsync(Guid id, string codice, decimal valore, DateTime validoDal, DateTime validoAl, string sezione, string? tipo = null, int? limiteUtilizzi = null, [CanBeNull] string? concurrencyStamp = null)
     {
         Check.NotNullOrWhiteSpace(codice, nameof(codice));
         Check.Length(codice, nameof(codice), ScontoConsts.CodiceMaxLength, ScontoConsts.CodiceMinLength);
         Check.NotNull(validoDal, nameof(validoDal));
         Check.NotNull(validoAl, nameof(validoAl));
+        Check.NotNullOrWhiteSpace(sezione, nameof(sezione));
+        Check.Length(sezione, nameof(sezione), ScontoConsts.SezioneMaxLength, ScontoConsts.SezioneMinLength);
         var sconto = await _scontoRepository.GetAsync(id);
         sconto.Codice = codice;
         sconto.Valore = valore;
         sconto.ValidoDal = validoDal;
         sconto.ValidoAl = validoAl;
+        sconto.Sezione = sezione;
         sconto.Tipo = tipo;
         sconto.LimiteUtilizzi = limiteUtilizzi;
         sconto.SetConcurrencyStampIfNotNull(concurrencyStamp);

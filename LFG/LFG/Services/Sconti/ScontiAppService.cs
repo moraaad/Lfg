@@ -36,8 +36,8 @@ public abstract class ScontiAppServiceBase : ApplicationService
 
     public virtual async Task<PagedResultDto<ScontoDto>> GetListAsync(GetScontiInput input)
     {
-        var totalCount = await _scontoRepository.GetCountAsync(input.FilterText, input.Codice, input.Tipo, input.ValoreMin, input.ValoreMax, input.LimiteUtilizziMin, input.LimiteUtilizziMax, input.ValidoDalMin, input.ValidoDalMax, input.ValidoAlMin, input.ValidoAlMax);
-        var items = await _scontoRepository.GetListAsync(input.FilterText, input.Codice, input.Tipo, input.ValoreMin, input.ValoreMax, input.LimiteUtilizziMin, input.LimiteUtilizziMax, input.ValidoDalMin, input.ValidoDalMax, input.ValidoAlMin, input.ValidoAlMax, input.Sorting, input.MaxResultCount, input.SkipCount);
+        var totalCount = await _scontoRepository.GetCountAsync(input.FilterText, input.Codice, input.Tipo, input.ValoreMin, input.ValoreMax, input.LimiteUtilizziMin, input.LimiteUtilizziMax, input.ValidoDalMin, input.ValidoDalMax, input.ValidoAlMin, input.ValidoAlMax, input.Sezione);
+        var items = await _scontoRepository.GetListAsync(input.FilterText, input.Codice, input.Tipo, input.ValoreMin, input.ValoreMax, input.LimiteUtilizziMin, input.LimiteUtilizziMax, input.ValidoDalMin, input.ValidoDalMax, input.ValidoAlMin, input.ValidoAlMax, input.Sezione, input.Sorting, input.MaxResultCount, input.SkipCount);
         return new PagedResultDto<ScontoDto>
         {
             TotalCount = totalCount,
@@ -59,14 +59,14 @@ public abstract class ScontiAppServiceBase : ApplicationService
     [Authorize(LFGPermissions.Sconti.Create)]
     public virtual async Task<ScontoDto> CreateAsync(ScontoCreateDto input)
     {
-        var sconto = await _scontoManager.CreateAsync(input.Codice, input.Valore, input.ValidoDal, input.ValidoAl, input.Tipo, input.LimiteUtilizzi);
+        var sconto = await _scontoManager.CreateAsync(input.Codice, input.Valore, input.ValidoDal, input.ValidoAl, input.Sezione, input.Tipo, input.LimiteUtilizzi);
         return ObjectMapper.Map<Sconto, ScontoDto>(sconto);
     }
 
     [Authorize(LFGPermissions.Sconti.Edit)]
     public virtual async Task<ScontoDto> UpdateAsync(Guid id, ScontoUpdateDto input)
     {
-        var sconto = await _scontoManager.UpdateAsync(id, input.Codice, input.Valore, input.ValidoDal, input.ValidoAl, input.Tipo, input.LimiteUtilizzi, input.ConcurrencyStamp);
+        var sconto = await _scontoManager.UpdateAsync(id, input.Codice, input.Valore, input.ValidoDal, input.ValidoAl, input.Sezione, input.Tipo, input.LimiteUtilizzi, input.ConcurrencyStamp);
         return ObjectMapper.Map<Sconto, ScontoDto>(sconto);
     }
 
@@ -79,7 +79,7 @@ public abstract class ScontiAppServiceBase : ApplicationService
             throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
         }
 
-        var items = await _scontoRepository.GetListAsync(input.FilterText, input.Codice, input.Tipo, input.ValoreMin, input.ValoreMax, input.LimiteUtilizziMin, input.LimiteUtilizziMax, input.ValidoDalMin, input.ValidoDalMax, input.ValidoAlMin, input.ValidoAlMax);
+        var items = await _scontoRepository.GetListAsync(input.FilterText, input.Codice, input.Tipo, input.ValoreMin, input.ValoreMax, input.LimiteUtilizziMin, input.LimiteUtilizziMax, input.ValidoDalMin, input.ValidoDalMax, input.ValidoAlMin, input.ValidoAlMax, input.Sezione);
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(ObjectMapper.Map<List<Sconto>, List<ScontoExcelDto>>(items));
         memoryStream.Seek(0, SeekOrigin.Begin);
@@ -95,7 +95,7 @@ public abstract class ScontiAppServiceBase : ApplicationService
     [Authorize(LFGPermissions.Sconti.Delete)]
     public virtual async Task DeleteAllAsync(GetScontiInput input)
     {
-        await _scontoRepository.DeleteAllAsync(input.FilterText, input.Codice, input.Tipo, input.ValoreMin, input.ValoreMax, input.LimiteUtilizziMin, input.LimiteUtilizziMax, input.ValidoDalMin, input.ValidoDalMax, input.ValidoAlMin, input.ValidoAlMax);
+        await _scontoRepository.DeleteAllAsync(input.FilterText, input.Codice, input.Tipo, input.ValoreMin, input.ValoreMax, input.LimiteUtilizziMin, input.LimiteUtilizziMax, input.ValidoDalMin, input.ValidoDalMax, input.ValidoAlMin, input.ValidoAlMax, input.Sezione);
     }
 
     public virtual async Task<LFG.Shared.DownloadTokenResultDto> GetDownloadTokenAsync()

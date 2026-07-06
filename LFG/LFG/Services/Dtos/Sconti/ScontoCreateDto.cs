@@ -18,4 +18,8 @@ public abstract class ScontoCreateDtoBase
     public DateTime ValidoDal { get; set; }
 
     public DateTime ValidoAl { get; set; }
+
+    [Required]
+    [StringLength(ScontoConsts.SezioneMaxLength, MinimumLength = ScontoConsts.SezioneMinLength)]
+    public string Sezione { get; set; } = null!;
 }

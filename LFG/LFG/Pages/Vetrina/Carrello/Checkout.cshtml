@@ -154,9 +154,21 @@
                     }
                 </div>
 
+                @if (Model.ScontoApplicato != null)
+                {
+                    <div class="v-checkout-row">
+                        <span>Subtotale</span>
+                        <span>€ @PrezzoHelper.ToCanonico(Model.Totale)</span>
+                    </div>
+                    <div class="v-checkout-row">
+                        <span>Sconto (@Model.ScontoApplicato.Codice)</span>
+                        <span>&minus; € @PrezzoHelper.ToCanonico(Model.Totale - Model.TotaleFinale)</span>
+                    </div>
+                }
+
                 <div class="v-checkout-total">
                     <span class="v-checkout-total__label">Totale</span>
-                    <span class="v-checkout-total__value">€ @PrezzoHelper.ToCanonico(Model.Totale)</span>
+                    <span class="v-checkout-total__value">€ @PrezzoHelper.ToCanonico(Model.TotaleFinale)</span>
                 </div>
 
                 <form method="post">
