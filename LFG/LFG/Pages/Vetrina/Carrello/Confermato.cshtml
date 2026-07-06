@@ -1,0 +1,116 @@
+@page "{id:guid}"
+@model LFG.Pages.Vetrina.Carrello.ConfermatoModel
+@using LFG.Helpers
+@{
+    Layout = null;
+    ViewBag.Title = "Ordine confermato";
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+    <style>
+        .v-confirm {
+            padding-top: calc(var(--header-h) + 48px);
+            padding-bottom: 80px;
+            min-height: 100svh;
+        }
+        .v-confirm-meta {
+            display: flex;
+            flex-direction: column;
+            gap: .35rem;
+            margin-bottom: 2rem;
+            font-size: .9rem;
+            opacity: .85;
+        }
+        .v-confirm-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            padding-bottom: .75rem;
+            border-bottom: 1px solid rgba(128,128,128,.15);
+            margin-bottom: .75rem;
+            font-size: .9rem;
+        }
+        .v-confirm-row__variant {
+            font-family: 'Space Mono', monospace;
+            font-size: .7rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            opacity: .5;
+        }
+        .v-confirm-total {
+            display: flex;
+            justify-content: flex-end;
+            align-items: baseline;
+            gap: 1rem;
+            margin: 1.5rem 0 2rem;
+        }
+        .v-confirm-total__label {
+            font-family: 'Space Mono', monospace;
+            font-size: .75rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            opacity: .6;
+        }
+        .v-confirm-total__value {
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body class="vetrina">
+
+    <partial name="../Account/_VetrinaNavbar" />
+
+    <section class="v-confirm">
+        <div class="v-container">
+            <h1 class="v-section-title">Ordine confermato</h1>
+
+            @if (!Model.Autenticato)
+            {
+                <p class="v-empty">
+                    Devi <a href="/Vetrina/Account/Login">accedere</a> per vedere questo ordine.
+                </p>
+            }
+            else if (!Model.Trovato)
+            {
+                <p class="v-empty">Ordine non trovato.</p>
+            }
+            else
+            {
+                <div class="v-confirm-meta">
+                    <span>Data ordine: @Model.DataOrdine.ToString("dd MMM yyyy HH:mm")</span>
+                    <span>Spedizione a: @Model.IndSpedizione</span>
+                    <span>Pagamento: @Model.MetodoPagamento</span>
+                </div>
+
+                @foreach (var r in Model.Righe)
+                {
+                    <div class="v-confirm-row">
+                        <span>
+                            @r.Nome
+                            <span class="v-confirm-row__variant">(@r.Taglia · @r.Colore) &times; @r.Quantita</span>
+                        </span>
+                        <span>€ @PrezzoHelper.ToCanonico(r.Subtotale)</span>
+                    </div>
+                }
+
+                <div class="v-confirm-total">
+                    <span class="v-confirm-total__label">Totale</span>
+                    <span class="v-confirm-total__value">€ @PrezzoHelper.ToCanonico(Model.Totale)</span>
+                </div>
+
+                <a href="/Vetrina/Shop" class="v-btn v-btn--primary">CONTINUA LO SHOPPING</a>
+            }
+        </div>
+    </section>
+
+</body>
+</html>

@@ -42,6 +42,10 @@
             opacity: 1;
             border-color: #c8a96e;
         }
+        .v-variant.is-selected {
+            border-color: #c8a96e;
+            font-weight: 700;
+        }
 
         /* ── Gating popup ────────────────────────────────── */
         .v-popup-overlay {
@@ -190,16 +194,13 @@
             opacity: .35;
             text-transform: uppercase;
         }
-        /* Messaggi */
-        .v-msg {
-            padding: .85rem 1.25rem;
-            margin-bottom: 1.25rem;
-            font-size: .88rem;
-            font-weight: 700;
-            letter-spacing: .04em;
+        /* Azioni prodotto */
+        .v-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .6rem;
+            margin-top: 1rem;
         }
-        .v-msg--ok    { border-left: 3px solid #5a9e6f; background: rgba(90,158,111,.07); }
-        .v-msg--error { border-left: 3px solid #c05252; background: rgba(192,82,82,.07); }
         /* Recensione già inviata */
         .v-review-done {
             padding: 1rem 1.5rem;
@@ -210,9 +211,38 @@
         }
     </style>
 </head>
+
 <body class="vetrina @(isLfg ? "shop--lfg" : "shop--glf")">
 
     <partial name="../Account/_VetrinaNavbar" />
+
+    @if (!string.IsNullOrEmpty(Model.MessaggioConferma))
+    {
+        <div class="v-msg v-msg--ok" role="status" data-autohide="4500">
+            <span class="v-msg__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M8.5 12.5l2.5 2.5 5-5" />
+                </svg>
+            </span>
+            <span>@Model.MessaggioConferma</span>
+            <button type="button" class="v-msg__close" aria-label="Chiudi">&times;</button>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.MessaggioErrore))
+    {
+        <div class="v-msg v-msg--error" role="alert" data-autohide="6000">
+            <span class="v-msg__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9" />
+                    <line x1="12" y1="8" x2="12" y2="13" />
+                    <line x1="12" y1="16.5" x2="12" y2="16.51" />
+                </svg>
+            </span>
+            <span>@Model.MessaggioErrore</span>
+            <button type="button" class="v-msg__close" aria-label="Chiudi">&times;</button>
+        </div>
+    }
 
     <section class="v-detail">
         <div class="v-container v-detail__inner">
@@ -247,8 +277,10 @@
                             @foreach (var v in Model.Varianti)
                             {
                                 var disponibile = v.QtaMagazzino > 0;
+                                var selezionata = v.Id == Model.Varianti.First().Id;
                                 <button type="button"
-                                        class="v-variant @(disponibile ? "" : "is-out")"
+                                        class="v-variant @(disponibile ? "" : "is-out") @(selezionata ? "is-selected" : "")"
+                                        data-variante-id="@v.Id"
                                         data-immagini="@string.Join("|", v.Immagini)"
                                         disabled="@(!disponibile)">
                                     @v.Taglia · @v.Colore
@@ -261,19 +293,40 @@
                         </div>
                     </div>
 
-                    @if (Model.PuoAgire)
-                    {
-                        <button type="button" class="v-btn v-btn--primary">
-                            AGGIUNGI AL CARRELLO
-                        </button>
-                    }
-                    else
-                    {
-                        <button type="button" class="v-btn v-btn--primary"
-                                onclick="document.getElementById('gatingPopup').classList.add('is-open')">
-                            AGGIUNGI AL CARRELLO
-                        </button>
-                    }
+                    <div class="v-actions">
+                        @if (Model.PuoAgire)
+                        {
+                            <form method="post" asp-page-handler="CarrelloAggiungi">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" id="varianteIdInput" name="VarianteId" value="@Model.Varianti.First().Id" />
+                                <button type="submit" class="v-btn v-btn--primary">
+                                    AGGIUNGI AL CARRELLO
+                                </button>
+                            </form>
+                            <form method="post" asp-page-handler="WishlistToggle">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="v-btn v-btn--outline"
+                                        title="@(Model.InWishlist ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti")">
+                                    <svg width="18" height="18" viewBox="0 0 24 24"
+                                         fill="@(Model.InWishlist ? "currentColor" : "none")"
+                                         stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+                                    </svg>
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <button type="button" class="v-btn v-btn--outline"
+                                    title="Aggiungi ai preferiti"
+                                    onclick="document.getElementById('gatingPopup').classList.add('is-open')">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+                                </svg>
+                            </button>
+                        }
+                    </div>
                 }
                 else
                 {
@@ -294,15 +347,6 @@
                 <h2 class="v-reviews__title">Recensioni</h2>
                 <span class="v-reviews__count">@Model.Recensioni.Count @(Model.Recensioni.Count == 1 ? "RECENSIONE" : "RECENSIONI")</span>
             </div>
-
-            @if (!string.IsNullOrEmpty(Model.MessaggioConferma))
-            {
-                <div class="v-msg v-msg--ok">@Model.MessaggioConferma</div>
-            }
-            @if (!string.IsNullOrEmpty(Model.MessaggioErrore))
-            {
-                <div class="v-msg v-msg--error">@Model.MessaggioErrore</div>
-            }
 
             @if (Model.Stato == IndexModel.StatoRecensione.PuoRecensire)
             {
@@ -462,9 +506,16 @@
         document.querySelectorAll('.v-variant[data-immagini]').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 var urls = btn.getAttribute('data-immagini').split('|').filter(Boolean);
-                if (!urls.length) return;
-                mostraImmagine(urls[0]);
-                rendiThumbStrip(urls);
+                if (urls.length) {
+                    mostraImmagine(urls[0]);
+                    rendiThumbStrip(urls);
+                }
+
+                document.querySelectorAll('.v-variant').forEach(function (altro) {
+                    altro.classList.toggle('is-selected', altro === btn);
+                });
+                var varianteIdInput = document.getElementById('varianteIdInput');
+                if (varianteIdInput) varianteIdInput.value = btn.getAttribute('data-variante-id');
             });
         });
 
@@ -480,6 +531,30 @@
                 if (popup) popup.classList.remove('is-open');
             }
         });
+
+        document.querySelectorAll('.v-msg').forEach(function (msg) {
+            var nascondi = function () {
+                msg.classList.add('is-leaving');
+                setTimeout(function () { msg.style.display = 'none'; }, 250);
+            };
+
+            var closeBtn = msg.querySelector('.v-msg__close');
+            if (closeBtn) closeBtn.addEventListener('click', nascondi);
+
+            var autohide = parseInt(msg.getAttribute('data-autohide'), 10);
+            if (autohide) setTimeout(nascondi, autohide);
+        });
+
+        @if (Model.CarrelloAggiornato)
+        {
+            <text>
+            var cartLink = document.getElementById('cartIconBtn');
+            if (cartLink) {
+                cartLink.classList.add('is-bumping');
+                setTimeout(function () { cartLink.classList.remove('is-bumping'); }, 400);
+            }
+            </text>
+        }
     </script>
 
 </body>

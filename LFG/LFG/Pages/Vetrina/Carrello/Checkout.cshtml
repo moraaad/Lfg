@@ -1,0 +1,204 @@
+@page
+@model LFG.Pages.Vetrina.Carrello.CheckoutModel
+@using LFG.Helpers
+@using LFG.Ordini
+@{
+    Layout = null;
+    ViewBag.Title = "Checkout";
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+    <style>
+        .v-checkout {
+            padding-top: calc(var(--header-h) + 48px);
+            padding-bottom: 80px;
+            min-height: 100svh;
+        }
+        .v-checkout-summary {
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(128,128,128,.15);
+        }
+        .v-checkout-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            font-size: .9rem;
+        }
+        .v-checkout-row__variant {
+            font-family: 'Space Mono', monospace;
+            font-size: .7rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            opacity: .5;
+        }
+        .v-checkout-total {
+            display: flex;
+            justify-content: flex-end;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .v-checkout-total__label {
+            font-family: 'Space Mono', monospace;
+            font-size: .75rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            opacity: .6;
+        }
+        .v-checkout-total__value {
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+        .v-field textarea {
+            background: transparent;
+            border: 1px solid rgba(128,128,128,.25);
+            border-radius: 2px;
+            color: inherit;
+            font-family: inherit;
+            font-size: 0.9rem;
+            padding: 0.65rem 0.85rem;
+            min-height: 90px;
+            resize: vertical;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .v-field textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        .v-field select {
+            background: transparent;
+            border: 1px solid rgba(128,128,128,.25);
+            border-radius: 2px;
+            color: inherit;
+            font-family: inherit;
+            font-size: 0.9rem;
+            padding: 0.65rem 0.85rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .v-field select:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        .v-checkout-ko {
+            margin: 0 0 1.25rem;
+            padding-left: 1.25rem;
+            font-size: .85rem;
+        }
+    </style>
+</head>
+<body class="vetrina">
+
+    <partial name="../Account/_VetrinaNavbar" />
+
+    <section class="v-checkout">
+        <div class="v-container">
+            <h1 class="v-section-title">Checkout</h1>
+
+            @if (!Model.Autenticato)
+            {
+                <p class="v-empty">
+                    Devi <a href="/Vetrina/Account/Login">accedere</a> per confermare l'ordine.
+                </p>
+            }
+            else
+            {
+                @if (!string.IsNullOrEmpty(Model.MessaggioErrore))
+                {
+                    <div class="v-msg v-msg--error" role="alert" data-autohide="6000">
+                        <span class="v-msg__icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9" />
+                                <line x1="12" y1="8" x2="12" y2="13" />
+                                <line x1="12" y1="16.5" x2="12" y2="16.51" />
+                            </svg>
+                        </span>
+                        <span>@Model.MessaggioErrore</span>
+                        <button type="button" class="v-msg__close" aria-label="Chiudi">&times;</button>
+                    </div>
+                }
+
+                @if (Model.RigheKO.Any())
+                {
+                    <ul class="v-checkout-ko">
+                        @foreach (var ko in Model.RigheKO)
+                        {
+                            <li>@ko</li>
+                        }
+                    </ul>
+                }
+
+                <div class="v-checkout-summary">
+                    @foreach (var r in Model.Righe)
+                    {
+                        <div class="v-checkout-row">
+                            <span>
+                                @r.Nome
+                                <span class="v-checkout-row__variant">(@r.Taglia · @r.Colore) &times; @r.Quantita</span>
+                            </span>
+                            <span>€ @PrezzoHelper.ToCanonico(r.Subtotale)</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="v-checkout-total">
+                    <span class="v-checkout-total__label">Totale</span>
+                    <span class="v-checkout-total__value">€ @PrezzoHelper.ToCanonico(Model.Totale)</span>
+                </div>
+
+                <form method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="v-field">
+                        <label asp-for="IndSpedizione">Indirizzo di spedizione</label>
+                        <textarea asp-for="IndSpedizione" maxlength="@OrdineConsts.IndSpedizioneMaxLength" placeholder="Via, numero, città, CAP"></textarea>
+                        <span asp-validation-for="IndSpedizione"></span>
+                    </div>
+
+                    <div class="v-field">
+                        <label asp-for="MetodoPagamento">Metodo di pagamento</label>
+                        <select asp-for="MetodoPagamento">
+                            <option value="">Seleziona…</option>
+                            @foreach (var opzione in Model.MetodiPagamentoOpzioni)
+                            {
+                                <option value="@opzione">@opzione</option>
+                            }
+                        </select>
+                        <span asp-validation-for="MetodoPagamento"></span>
+                    </div>
+
+                    <button type="submit" class="v-btn v-btn--primary">CONFERMA ORDINE</button>
+                </form>
+            }
+        </div>
+    </section>
+
+    <script>
+        document.querySelectorAll('.v-msg').forEach(function (msg) {
+            var nascondi = function () {
+                msg.classList.add('is-leaving');
+                setTimeout(function () { msg.style.display = 'none'; }, 250);
+            };
+
+            var closeBtn = msg.querySelector('.v-msg__close');
+            if (closeBtn) closeBtn.addEventListener('click', nascondi);
+
+            var autohide = parseInt(msg.getAttribute('data-autohide'), 10);
+            if (autohide) setTimeout(nascondi, autohide);
+        });
+    </script>
+
+</body>
+</html>

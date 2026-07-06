@@ -1,0 +1,214 @@
+@page
+@model LFG.Pages.Vetrina.Carrello.IndexModel
+@using LFG.Helpers
+@using LFG.RigaOrdini
+@{
+    Layout = null;
+    ViewBag.Title = "Carrello";
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+    <style>
+        .v-cart {
+            padding-top: calc(var(--header-h) + 48px);
+            padding-bottom: 80px;
+            min-height: 100svh;
+        }
+        .v-cart-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        .v-cart-row {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid rgba(128,128,128,.15);
+        }
+        .v-cart-row__img {
+            width: 84px;
+            height: 84px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .v-cart-row__info {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .v-cart-row__name {
+            font-weight: 700;
+            margin: 0 0 .25rem;
+        }
+        .v-cart-row__variant {
+            font-family: 'Space Mono', monospace;
+            font-size: .7rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            opacity: .5;
+        }
+        .v-cart-row__price {
+            font-family: 'Space Mono', monospace;
+            font-size: .8rem;
+            opacity: .75;
+            margin-top: .35rem;
+        }
+        .v-cart-row__qty {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .v-cart-row__qty input[type="number"] {
+            width: 56px;
+            padding: .4rem .5rem;
+            border: 1px solid rgba(128,128,128,.25);
+            background: transparent;
+            color: inherit;
+            font-family: inherit;
+            text-align: center;
+        }
+        .v-cart-row__subtotale {
+            font-weight: 700;
+            min-width: 90px;
+            text-align: right;
+        }
+        .v-cart-row__remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            opacity: .5;
+            font-size: 1.1rem;
+            line-height: 1;
+            color: inherit;
+        }
+        .v-cart-row__remove:hover { opacity: 1; }
+        .v-cart-summary {
+            display: flex;
+            justify-content: flex-end;
+            align-items: baseline;
+            gap: 1rem;
+            padding-top: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .v-cart-summary__label {
+            font-family: 'Space Mono', monospace;
+            font-size: .75rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            opacity: .6;
+        }
+        .v-cart-summary__total {
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+        .v-cart-actions {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body class="vetrina">
+
+    <partial name="../Account/_VetrinaNavbar" />
+
+    <section class="v-cart">
+        <div class="v-container">
+            <h1 class="v-section-title">Carrello</h1>
+
+            @if (!string.IsNullOrEmpty(Model.MessaggioErrore))
+            {
+                <div class="v-msg v-msg--error" role="alert" data-autohide="6000">
+                    <span class="v-msg__icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9" />
+                            <line x1="12" y1="8" x2="12" y2="13" />
+                            <line x1="12" y1="16.5" x2="12" y2="16.51" />
+                        </svg>
+                    </span>
+                    <span>@Model.MessaggioErrore</span>
+                    <button type="button" class="v-msg__close" aria-label="Chiudi">&times;</button>
+                </div>
+            }
+
+            @if (!Model.Autenticato)
+            {
+                <p class="v-empty">
+                    Devi <a href="/Vetrina/Account/Login">accedere</a> per vedere il tuo carrello.
+                </p>
+            }
+            else if (!Model.Righe.Any())
+            {
+                <p class="v-empty">Il carrello è vuoto.</p>
+            }
+            else
+            {
+                <div class="v-cart-list">
+                    @foreach (var r in Model.Righe)
+                    {
+                        <div class="v-cart-row">
+                            <img class="v-cart-row__img" src="@r.UrlImmagine" alt="@r.Nome" />
+                            <div class="v-cart-row__info">
+                                <p class="v-cart-row__name">@r.Nome</p>
+                                <span class="v-cart-row__variant">@r.Taglia · @r.Colore</span>
+                                <p class="v-cart-row__price">€ @PrezzoHelper.ToCanonico(r.PrezzoUnitario) / cad.</p>
+                            </div>
+                            <form method="post" asp-page-handler="AggiornaQuantita" class="v-cart-row__qty">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="rigaId" value="@r.RigaId" />
+                                <input type="number" name="quantita" value="@r.Quantita" min="0" max="@RigaOrdineConsts.QuantitaMaxLength" />
+                                <button type="submit" class="v-btn v-btn--outline">Aggiorna</button>
+                            </form>
+                            <span class="v-cart-row__subtotale">€ @PrezzoHelper.ToCanonico(r.Subtotale)</span>
+                            <form method="post" asp-page-handler="Rimuovi">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="rigaId" value="@r.RigaId" />
+                                <button type="submit" class="v-cart-row__remove" title="Rimuovi" aria-label="Rimuovi">&times;</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+
+                <div class="v-cart-summary">
+                    <span class="v-cart-summary__label">Totale</span>
+                    <span class="v-cart-summary__total">€ @PrezzoHelper.ToCanonico(Model.Totale)</span>
+                </div>
+
+                <div class="v-cart-actions">
+                    <form method="post" asp-page-handler="Svuota">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="v-btn v-btn--outline">SVUOTA CARRELLO</button>
+                    </form>
+                    <a href="/Vetrina/Carrello/Checkout" class="v-btn v-btn--primary">PROCEDI AL CHECKOUT</a>
+                </div>
+            }
+        </div>
+    </section>
+
+    <script>
+        document.querySelectorAll('.v-msg').forEach(function (msg) {
+            var nascondi = function () {
+                msg.classList.add('is-leaving');
+                setTimeout(function () { msg.style.display = 'none'; }, 250);
+            };
+
+            var closeBtn = msg.querySelector('.v-msg__close');
+            if (closeBtn) closeBtn.addEventListener('click', nascondi);
+
+            var autohide = parseInt(msg.getAttribute('data-autohide'), 10);
+            if (autohide) setTimeout(nascondi, autohide);
+        });
+    </script>
+
+</body>
+</html>

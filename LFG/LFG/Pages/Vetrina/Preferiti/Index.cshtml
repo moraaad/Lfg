@@ -1,0 +1,75 @@
+@page
+@model LFG.Pages.Vetrina.Preferiti.IndexModel
+@{
+    Layout = null;
+    var isLfg = string.Equals(Model.SezioneUtente, "LFG", System.StringComparison.OrdinalIgnoreCase);
+    ViewBag.Title = "I MIEI PREFERITI";
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+    <style>
+        .v-card__remove-form {
+            margin-top: .6rem;
+        }
+        .v-card__remove-form .v-btn {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="vetrina @(isLfg ? "shop--lfg" : "shop--glf")">
+
+    <partial name="../Account/_VetrinaNavbar" />
+
+    <section class="v-shop">
+        <div class="v-container">
+            <h1 class="v-section-title">I MIEI PREFERITI</h1>
+
+            @if (!Model.Autenticato)
+            {
+                <p class="v-empty">
+                    Devi <a href="/Vetrina/Account/Login">accedere</a> per vedere i tuoi preferiti.
+                </p>
+            }
+            else if (!Model.Preferiti.Any())
+            {
+                <p class="v-empty">Nessun prodotto nei preferiti.</p>
+            }
+            else
+            {
+                <div class="v-grid">
+                    @foreach (var p in Model.Preferiti)
+                    {
+                        <div class="v-card v-card--@(isLfg ? "lfg" : "glf")">
+                            <a href="/Vetrina/Prodotto/@p.ProdottoId">
+                                <div class="v-card__img-wrap">
+                                    <img src="@p.UrlImmagine" alt="@p.Nome" />
+                                </div>
+                                <div class="v-card__caption">
+                                    <div class="v-card__meta">
+                                        <span class="v-card__name">@p.Nome</span>
+                                        <span class="v-card__price">€ @p.Prezzo</span>
+                                    </div>
+                                </div>
+                            </a>
+                            <form method="post" asp-page-handler="Rimuovi" class="v-card__remove-form">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="elementoListaId" value="@p.ElementoListaId" />
+                                <button type="submit" class="v-btn v-btn--outline">RIMUOVI</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+</body>
+</html>

@@ -1,9 +1,29 @@
+@using LFG.Ordini
+@using LFG.RigaOrdini
 @inject LFG.Clienti.IClientiAppService ClientiSvc
+@inject Volo.Abp.Domain.Repositories.IRepository<Ordine, System.Guid> OrdineRepo
+@inject Volo.Abp.Domain.Repositories.IRepository<RigaOrdine, System.Guid> RigaOrdineRepo
 @{
     string? sezioneUtente = null;
+    int pezziCarrello = 0;
     if (User.Identity?.IsAuthenticated == true)
     {
-        sezioneUtente = await ClientiSvc.GetSezioneCorrenteAsync();
+        var clienteCorrente = await ClientiSvc.GetClienteCorrenteAsync();
+        sezioneUtente = clienteCorrente?.Sezione;
+
+        if (clienteCorrente != null)
+        {
+            var bozze = await OrdineRepo.GetListAsync(o => o.ClienteId == clienteCorrente.Id && o.Stato == "Bozza");
+            var ordineBozza = bozze.FirstOrDefault();
+            if (ordineBozza != null)
+            {
+                var righeBozza = await RigaOrdineRepo.GetListAsync(r => r.OrdineId == ordineBozza.Id);
+                foreach (var riga in righeBozza)
+                {
+                    pezziCarrello += riga.Quantita;
+                }
+            }
+        }
     }
     var isLfgUtente = string.Equals(sezioneUtente, "LFG", StringComparison.OrdinalIgnoreCase);
 }
@@ -29,6 +49,18 @@
                         @sezioneUtente
                     </span>
                 }
+                <a href="/Vetrina/Preferiti" class="v-icon-btn" aria-label="Preferiti" title="Preferiti">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+                    </svg>
+                </a>
+                <a href="/Vetrina/Carrello" class="v-icon-btn v-cart-link" id="cartIconBtn" aria-label="Carrello" title="Carrello">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 7h12l1 13H5L6 7z" />
+                        <path d="M9 7a3 3 0 1 1 6 0" />
+                    </svg>
+                    <span class="v-cart-badge @(pezziCarrello > 0 ? "" : "is-hidden")" id="cartBadge">@pezziCarrello</span>
+                </a>
                 <a href="/Vetrina/Account" class="v-header__user">@User.Identity.Name</a>
                 <a href="/Vetrina/Account/Logout" class="v-btn v-btn--outline">ESCI &rarr;</a>
             }
