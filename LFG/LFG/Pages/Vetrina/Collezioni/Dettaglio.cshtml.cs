@@ -17,18 +17,15 @@ namespace LFG.Pages.Vetrina.Collezioni;
 public class DettaglioModel : PageModel
 {
     private readonly IRepository<Collezione, Guid> _collezioneRepo;
-    private readonly IRepository<ProdottoColleziones> _prodottoColleezioniRepo;
     private readonly IRepository<LFG.Prodotti.Prodotto, Guid> _prodottoRepo;
     private readonly IRepository<VarianteProdotto, Guid> _varianteRepo;
 
     public DettaglioModel(
         IRepository<Collezione, Guid> collezioneRepo,
-        IRepository<ProdottoColleziones> prodottoColleezioniRepo,
         IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo,
         IRepository<VarianteProdotto, Guid> varianteRepo)
     {
         _collezioneRepo = collezioneRepo;
-        _prodottoColleezioniRepo = prodottoColleezioniRepo;
         _prodottoRepo = prodottoRepo;
         _varianteRepo = varianteRepo;
     }
@@ -53,13 +50,12 @@ public class DettaglioModel : PageModel
         Anno = collezione.Anno.Year;
         Sezione = collezione.Sezione;
 
-        // Ponte N:M: Collezione -> Collezione_Prodotto -> Prodotto
-        var link = await _prodottoColleezioniRepo.GetListAsync(pc => pc.CollezioneId == id);
-        var prodottoIds = link.Select(pc => pc.ProdottoId).ToList();
+        // FK diretta 1:N: Prodotto.CollezioneId -> Collezione
+        var prodotti = await _prodottoRepo.GetListAsync(p => p.CollezioneId == id);
 
-        if (prodottoIds.Any())
+        if (prodotti.Any())
         {
-            var prodotti = await _prodottoRepo.GetListAsync(p => prodottoIds.Contains(p.Id));
+            var prodottoIds = prodotti.Select(p => p.Id).ToList();
             var varianti = await _varianteRepo.GetListAsync(v => prodottoIds.Contains(v.ProdottoId));
 
             Prodotti = prodotti

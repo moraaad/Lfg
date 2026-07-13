@@ -4,6 +4,7 @@ using LFG.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace LFG.Migrations
 {
     [DbContext(typeof(LFGDbContext))]
-    partial class LFGDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260713104200_Updated_Prodotto_26071312414860")]
+    partial class Updated_Prodotto_26071312414860
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -857,6 +860,23 @@ namespace LFG.Migrations
                     b.HasIndex("CollezioneId");
 
                     b.ToTable("AppProdotti", (string)null);
+                });
+
+            modelBuilder.Entity("LFG.Prodotti.ProdottoColleziones", b =>
+                {
+                    b.Property<Guid>("ProdottoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CollezioneId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ProdottoId", "CollezioneId");
+
+                    b.HasIndex("CollezioneId");
+
+                    b.HasIndex("ProdottoId", "CollezioneId");
+
+                    b.ToTable("AppProdottoColleziones", (string)null);
                 });
 
             modelBuilder.Entity("LFG.Recensioni.Recensione", b =>
@@ -3969,6 +3989,15 @@ namespace LFG.Migrations
                         .WithMany()
                         .HasForeignKey("CollezioneId")
                         .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("LFG.Prodotti.ProdottoColleziones", b =>
+                {
+                    b.HasOne("LFG.Collezioni.Collezione", null)
+                        .WithMany()
+                        .HasForeignKey("CollezioneId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("LFG.Recensioni.Recensione", b =>

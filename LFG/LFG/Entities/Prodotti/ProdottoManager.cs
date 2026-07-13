@@ -52,9 +52,4 @@ public abstract class ProdottoManagerBase : DomainService
         prodotto.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await _prodottoRepository.UpdateAsync(prodotto);
     }
-
-    internal async Task<Prodotto> UpdateAsync(Guid id, List<Guid> collezionesIds, Guid? categoriaId, string nome, string v, string sezione, string? descrizione, string? codiceSku, string? concurrencyStamp)
-    {
-        throw new NotImplementedException();
-    }
 }

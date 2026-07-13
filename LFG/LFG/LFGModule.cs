@@ -400,7 +400,7 @@ public class LFGModule : AbpModule
              * default repositories only for aggregate roots
              * Documentation: https://docs.abp.io/en/abp/latest/Entity-Framework-Core#add-default-repositories
              */
-            options.AddDefaultRepositories(includeAllEntities: true); // includeAllEntities: true -> include anche le entità non aggregate root (es. ProdottoColleziones) --> ciò causa duplicazione delle repos per ProdottoColleziones, che ha chiave composta (ProdottoId + CollezioneId) e non è un aggregate root. Per evitare duplicazioni, si registra a mano la repo per ProdottoColleziones.
+            options.AddDefaultRepositories(includeAllEntities: true); // includeAllEntities: true -> include anche le entità non aggregate root (es. VarianteProdotto).
             options.AddRepository<Categoria, Categorie.EfCoreCategoriaRepository>();
             options.AddRepository<Collezione, Collezioni.EfCoreCollezioneRepository>();
             options.AddRepository<Sconto, Sconti.EfCoreScontoRepository>();
@@ -415,10 +415,6 @@ public class LFGModule : AbpModule
             options.AddRepository<RigaOrdine, RigaOrdini.EfCoreRigaOrdineRepository>();
             options.AddRepository<ElementoLista, ElementoListe.EfCoreElementoListaRepository>();
             options.AddRepository<ImmagineVariante, ImmagineVarianti.EfCoreImmagineVarianteRepository>();
-            // ProdottoColleziones: tabella associativa N:M Prodotto<->Collezione, chiave composta
-            // (ProdottoId + CollezioneId), nessuna DbSet<T> dedicata in LFGDbContext -> non viene
-            // rilevata da AddDefaultRepositories(includeAllEntities: true), va registrata a mano.
-            options.AddRepository<ProdottoColleziones, Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository<LFGDbContext, ProdottoColleziones>>();
         });
         Configure<AbpDbContextOptions>(options => {
             options.Configure(configurationContext => {

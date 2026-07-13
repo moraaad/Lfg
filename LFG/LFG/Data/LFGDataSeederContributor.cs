@@ -132,6 +132,7 @@ public class LFGDataSeedContributor : IDataSeedContributor, ITransientDependency
             new Prodotto(_guidGenerator.Create(),
 
                 catTshirt.Id,
+                coll.Id,
                 "LFG Essential T-Shirt - Dual Logos",
                 "49.90",
                 "LFG",

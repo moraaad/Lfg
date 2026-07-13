@@ -184,18 +184,6 @@ public class LFGDbContext : AbpDbContext<LFGDbContext>
 
         if (builder.IsHostDatabase())
         {
-            builder.Entity<ProdottoColleziones>(b => {
-                b.ToTable(DbTablePrefix + "ProdottoColleziones", DbSchema);
-                b.ConfigureByConvention();
-                b.HasKey(x => new { x.ProdottoId, x.CollezioneId });
-                b.HasOne<Prodotto>().WithMany(x => x.Colleziones).HasForeignKey(x => x.ProdottoId).IsRequired().OnDelete(DeleteBehavior.Cascade);
-                b.HasOne<Collezione>().WithMany().HasForeignKey(x => x.CollezioneId).IsRequired().OnDelete(DeleteBehavior.Cascade);
-                b.HasIndex(x => new { x.ProdottoId, x.CollezioneId });
-            });
-        }
-
-        if (builder.IsHostDatabase())
-        {
         }
 
         if (builder.IsHostDatabase())
@@ -306,6 +294,10 @@ public class LFGDbContext : AbpDbContext<LFGDbContext>
                 b.HasOne<Sconto>().WithMany().HasForeignKey(x => x.ScontoId).OnDelete(DeleteBehavior.SetNull);
                 b.HasOne<Indirizzo>().WithMany().HasForeignKey(x => x.IndirizzoId).OnDelete(DeleteBehavior.SetNull);
             });
+        }
+
+        if (builder.IsHostDatabase())
+        {
         }
 
         if (builder.IsHostDatabase())

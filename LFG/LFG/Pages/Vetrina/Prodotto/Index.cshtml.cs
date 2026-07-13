@@ -34,7 +34,6 @@ public class IndexModel : PageModel
     private readonly IRepository<ElementoLista, Guid> _elementoListaRepo;
     private readonly IRepository<Ordine, Guid> _ordineRepo;
     private readonly IRepository<RigaOrdine, Guid> _rigaOrdineRepo;
-    private readonly IRepository<LFG.Prodotti.ProdottoColleziones> _prodottoColleezioniRepo;
     private readonly IRepository<Collezione, Guid> _collezioneRepo;
     private readonly IClock _clock;
 
@@ -48,7 +47,6 @@ public class IndexModel : PageModel
         IRepository<ElementoLista, Guid> elementoListaRepo,
         IRepository<Ordine, Guid> ordineRepo,
         IRepository<RigaOrdine, Guid> rigaOrdineRepo,
-        IRepository<LFG.Prodotti.ProdottoColleziones> prodottoColleezioniRepo,
         IRepository<Collezione, Guid> collezioneRepo,
         IClock clock)
     {
@@ -61,7 +59,6 @@ public class IndexModel : PageModel
         _elementoListaRepo = elementoListaRepo;
         _ordineRepo       = ordineRepo;
         _rigaOrdineRepo   = rigaOrdineRepo;
-        _prodottoColleezioniRepo = prodottoColleezioniRepo;
         _collezioneRepo   = collezioneRepo;
         _clock            = clock;
     }
@@ -371,14 +368,13 @@ public class IndexModel : PageModel
         else
             Stato = StatoRecensione.PuoRecensire;
 
-        // Collezioni di appartenenza — Ponte N:M: Prodotto -> Collezione_Prodotto -> Collezione
-        var link = await _prodottoColleezioniRepo.GetListAsync(pc => pc.ProdottoId == id);
-        var collezioneIds = link.Select(pc => pc.CollezioneId).ToList();
-
-        Collezioni = collezioneIds.Any()
-            ? (await _collezioneRepo.GetListAsync(c => collezioneIds.Contains(c.Id)))
-                .Select(c => new CollezioneVista(c.Id, c.Nome, c.Stagione, c.Anno.Year))
-                .ToList()
-            : new List<CollezioneVista>();
+        // Collezione di appartenenza — FK diretta 1:N: Prodotto.CollezioneId -> Collezione
+        Collezioni = new List<CollezioneVista>();
+        if (prod.CollezioneId.HasValue)
+        {
+            var collezione = await _collezioneRepo.FindAsync(prod.CollezioneId.Value);
+            if (collezione != null)
+                Collezioni.Add(new CollezioneVista(collezione.Id, collezione.Nome, collezione.Stagione, collezione.Anno.Year));
+        }
     }
 }
