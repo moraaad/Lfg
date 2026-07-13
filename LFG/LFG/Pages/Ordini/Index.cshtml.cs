@@ -36,6 +36,10 @@ public abstract class IndexModelBase : AbpPageModel
     public Guid? ScontoIdFilter { get; set; }
 
     public List<SelectListItem> ScontoLookupList { get; set; } = new List<SelectListItem> { new SelectListItem(string.Empty, "") };
+    [SelectItems(nameof(IndirizzoLookupList))]
+    public Guid? IndirizzoIdFilter { get; set; }
+
+    public List<SelectListItem> IndirizzoLookupList { get; set; } = new List<SelectListItem> { new SelectListItem(string.Empty, "") };
 
     protected IOrdiniAppService _ordiniAppService;
 
@@ -48,6 +52,7 @@ public abstract class IndexModelBase : AbpPageModel
     {
         ClienteLookupList.AddRange((await _ordiniAppService.GetClienteLookupAsync(new LookupRequestDto { MaxResultCount = LimitedResultRequestDto.MaxMaxResultCount })).Items.Select(t => new SelectListItem(t.DisplayName, t.Id.ToString())).ToList());
         ScontoLookupList.AddRange((await _ordiniAppService.GetScontoLookupAsync(new LookupRequestDto { MaxResultCount = LimitedResultRequestDto.MaxMaxResultCount })).Items.Select(t => new SelectListItem(t.DisplayName, t.Id.ToString())).ToList());
+        IndirizzoLookupList.AddRange((await _ordiniAppService.GetIndirizzoLookupAsync(new LookupRequestDto { MaxResultCount = LimitedResultRequestDto.MaxMaxResultCount })).Items.Select(t => new SelectListItem(t.DisplayName, t.Id.ToString())).ToList());
         await Task.CompletedTask;
     }
 }

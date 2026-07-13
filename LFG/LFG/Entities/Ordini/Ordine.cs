@@ -1,5 +1,6 @@
 using LFG.Clienti;
 using LFG.Sconti;
+using LFG.Indirizzi;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -31,11 +32,13 @@ public abstract class OrdineBase : FullAuditedAggregateRoot<Guid>
 
     public Guid? ScontoId { get; set; }
 
+    public Guid? IndirizzoId { get; set; }
+
     protected OrdineBase()
     {
     }
 
-    public OrdineBase(Guid id, Guid? clienteId, Guid? scontoId, DateTime dataOrdine, decimal importoTotale, string? stato = null, string? indSpedizione = null, string? metodoPagamento = null)
+    public OrdineBase(Guid id, Guid? clienteId, Guid? scontoId, Guid? indirizzoId, DateTime dataOrdine, decimal importoTotale, string? stato = null, string? indSpedizione = null, string? metodoPagamento = null)
     {
         Id = id;
         Check.Length(stato, nameof(stato), OrdineConsts.StatoMaxLength, 0);
@@ -48,5 +51,6 @@ public abstract class OrdineBase : FullAuditedAggregateRoot<Guid>
         MetodoPagamento = metodoPagamento;
         ClienteId = clienteId;
         ScontoId = scontoId;
+        IndirizzoId = indirizzoId;
     }
 }

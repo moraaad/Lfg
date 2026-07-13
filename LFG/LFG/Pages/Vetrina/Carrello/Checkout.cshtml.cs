@@ -15,6 +15,8 @@ using LFG.RigaOrdini;
 using LFG.Clienti;
 using LFG.Sconti;
 using LFG.Helpers;
+using LFG.Indirizzi;
+using Volo.Abp.Timing;
 
 namespace LFG.Pages.Vetrina.Carrello;
 
@@ -27,6 +29,8 @@ public class CheckoutModel : PageModel
     private readonly IRepository<VarianteProdotto, Guid> _varianteRepo;
     private readonly IRepository<LFG.Prodotti.Prodotto, Guid> _prodottoRepo;
     private readonly IRepository<Sconto, Guid> _scontoRepo;
+    private readonly IRepository<Indirizzo, Guid> _indirizzoRepo;
+    private readonly IClock _clock;
 
     public CheckoutModel(
         IClientiAppService clientiAppService,
@@ -34,7 +38,9 @@ public class CheckoutModel : PageModel
         IRepository<RigaOrdine, Guid> rigaOrdineRepo,
         IRepository<VarianteProdotto, Guid> varianteRepo,
         IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo,
-        IRepository<Sconto, Guid> scontoRepo)
+        IRepository<Sconto, Guid> scontoRepo,
+        IRepository<Indirizzo, Guid> indirizzoRepo,
+        IClock clock)
     {
         _clientiAppService = clientiAppService;
         _ordineRepo         = ordineRepo;
@@ -42,6 +48,8 @@ public class CheckoutModel : PageModel
         _varianteRepo       = varianteRepo;
         _prodottoRepo       = prodottoRepo;
         _scontoRepo         = scontoRepo;
+        _indirizzoRepo      = indirizzoRepo;
+        _clock              = clock;
     }
 
     public bool Autenticato { get; set; }
@@ -57,10 +65,28 @@ public class CheckoutModel : PageModel
     public string? MessaggioErrore { get; set; }
     public List<string> RigheKO { get; set; } = new();
 
+    public List<Indirizzo> IndirizziCliente { get; set; } = new();
+
+    /// <summary>Id (come stringa) di un Indirizzo esistente scelto, oppure "nuovo".</summary>
     [BindProperty]
-    [Required(ErrorMessage = "Indica un indirizzo di spedizione.")]
-    [StringLength(OrdineConsts.IndSpedizioneMaxLength)]
-    public string IndSpedizione { get; set; } = "";
+    public string IndirizzoOpzione { get; set; } = "";
+
+    [BindProperty]
+    [StringLength(IndirizzoConsts.ViaMaxLength)]
+    public string? NuovoIndirizzoVia { get; set; }
+
+    [BindProperty]
+    public string? NuovoIndirizzoCitta { get; set; }
+
+    [BindProperty]
+    [StringLength(IndirizzoConsts.CapMaxLength)]
+    public string? NuovoIndirizzoCap { get; set; }
+
+    [BindProperty]
+    public string? NuovoIndirizzoProvincia { get; set; }
+
+    [BindProperty]
+    public string? NuovoIndirizzoPaese { get; set; }
 
     [BindProperty]
     [Required(ErrorMessage = "Scegli un metodo di pagamento.")]
@@ -82,6 +108,7 @@ public class CheckoutModel : PageModel
         if (!Righe.Any())
             return RedirectToPage("Index");
 
+        await CaricaIndirizziAsync(cliente.Id);
         return Page();
     }
 
@@ -110,6 +137,7 @@ public class CheckoutModel : PageModel
         if (!ModelState.IsValid)
         {
             await CaricaRigheAsync(cliente.Id);
+            await CaricaIndirizziAsync(cliente.Id);
             return Page();
         }
 
@@ -117,6 +145,52 @@ public class CheckoutModel : PageModel
         {
             MessaggioErrore = "Scegli un metodo di pagamento valido.";
             await CaricaRigheAsync(cliente.Id);
+            await CaricaIndirizziAsync(cliente.Id);
+            return Page();
+        }
+
+        // Indirizzo di spedizione: OBBLIGATORIO, o un indirizzo esistente del cliente
+        // (anti-manomissione: deve appartenere al cliente corrente) oppure uno nuovo.
+        Indirizzo indirizzoScelto;
+        if (string.Equals(IndirizzoOpzione, "nuovo", StringComparison.OrdinalIgnoreCase))
+        {
+            if (string.IsNullOrWhiteSpace(NuovoIndirizzoVia) || string.IsNullOrWhiteSpace(NuovoIndirizzoCap))
+            {
+                MessaggioErrore = "Inserisci almeno via e CAP per il nuovo indirizzo.";
+                await CaricaRigheAsync(cliente.Id);
+                await CaricaIndirizziAsync(cliente.Id);
+                return Page();
+            }
+
+            var nuovoIndirizzo = new Indirizzo(
+                Guid.NewGuid(),
+                cliente.Id,
+                NuovoIndirizzoVia.Trim(),
+                NuovoIndirizzoCap.Trim(),
+                string.IsNullOrWhiteSpace(NuovoIndirizzoPaese) ? null : NuovoIndirizzoPaese.Trim(),
+                string.IsNullOrWhiteSpace(NuovoIndirizzoCitta) ? null : NuovoIndirizzoCitta.Trim(),
+                string.IsNullOrWhiteSpace(NuovoIndirizzoProvincia) ? null : NuovoIndirizzoProvincia.Trim());
+            await _indirizzoRepo.InsertAsync(nuovoIndirizzo, autoSave: true);
+            indirizzoScelto = nuovoIndirizzo;
+        }
+        else if (Guid.TryParse(IndirizzoOpzione, out var idIndirizzoScelto))
+        {
+            var indirizzoEsistente = await _indirizzoRepo.FindAsync(idIndirizzoScelto);
+            if (indirizzoEsistente == null || indirizzoEsistente.ClienteId != cliente.Id)
+            {
+                MessaggioErrore = "L'indirizzo selezionato non è valido.";
+                await CaricaRigheAsync(cliente.Id);
+                await CaricaIndirizziAsync(cliente.Id);
+                return Page();
+            }
+
+            indirizzoScelto = indirizzoEsistente;
+        }
+        else
+        {
+            MessaggioErrore = "Seleziona o inserisci un indirizzo di spedizione.";
+            await CaricaRigheAsync(cliente.Id);
+            await CaricaIndirizziAsync(cliente.Id);
             return Page();
         }
 
@@ -150,6 +224,7 @@ public class CheckoutModel : PageModel
 
             MessaggioErrore = "Scorta insufficiente per uno o più articoli. Nessun articolo è stato scalato.";
             await CaricaRigheAsync(cliente.Id);
+            await CaricaIndirizziAsync(cliente.Id);
             return Page();
         }
 
@@ -169,7 +244,7 @@ public class CheckoutModel : PageModel
         {
             var sconto = await _scontoRepo.FindAsync(ordine.ScontoId.Value);
             var (valido, _) = sconto != null
-                ? await ScontoHelper.ValidaAsync(sconto, cliente.Sezione, DateTime.UtcNow, _ordineRepo)
+                ? await ScontoHelper.ValidaAsync(sconto, cliente.Sezione, _clock.Now, _ordineRepo)
                 : (false, null);
 
             if (valido && sconto != null)
@@ -184,10 +259,13 @@ public class CheckoutModel : PageModel
         }
 
         ordine.Stato = "Confermato";
-        ordine.IndSpedizione = IndSpedizione;
+        ordine.IndirizzoId = indirizzoScelto.Id;
+        // Oltre alla FK strutturata, si salva anche una copia testuale per le viste
+        // (es. griglia admin) che leggono ancora IndSpedizione senza fare il join.
+        ordine.IndSpedizione = FormattaIndirizzo(indirizzoScelto);
         ordine.MetodoPagamento = MetodoPagamento;
         ordine.ImportoTotale = totaleFinale;
-        ordine.DataOrdine = DateTime.UtcNow;
+        ordine.DataOrdine = _clock.Now;
         await _ordineRepo.UpdateAsync(ordine);
 
         return RedirectToPage("Confermato", new { id = ordine.Id });
@@ -238,5 +316,26 @@ public class CheckoutModel : PageModel
                 TotaleFinale = ScontoHelper.Calcola(sconto, Totale);
             }
         }
+    }
+
+    private async Task CaricaIndirizziAsync(Guid clienteId)
+    {
+        IndirizziCliente = await _indirizzoRepo.GetListAsync(i => i.ClienteId == clienteId);
+    }
+
+    private static string FormattaIndirizzo(Indirizzo indirizzo)
+    {
+        var testo = indirizzo.Via + ", " + indirizzo.Cap;
+        if (!string.IsNullOrWhiteSpace(indirizzo.Citta))
+            testo += " " + indirizzo.Citta;
+        if (!string.IsNullOrWhiteSpace(indirizzo.Provincia))
+            testo += " (" + indirizzo.Provincia + ")";
+        if (!string.IsNullOrWhiteSpace(indirizzo.Paese))
+            testo += ", " + indirizzo.Paese;
+
+        // Il campo legacy IndSpedizione è limitato in DB: tronca per sicurezza.
+        return testo.Length > OrdineConsts.IndSpedizioneMaxLength
+            ? testo[..OrdineConsts.IndSpedizioneMaxLength]
+            : testo;
     }
 }

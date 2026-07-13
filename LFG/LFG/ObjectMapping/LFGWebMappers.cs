@@ -1,3 +1,11 @@
+using LFG.VarianteProdotti;
+using LFG.Web.Pages.VarianteProdotti;
+using LFG.Prodotti;
+using LFG.Web.Pages.Prodotti;
+using LFG.Ordini;
+using LFG.Web.Pages.Ordini;
+using LFG.Ordini;
+using LFG.Web.Pages.Ordini;
 using LFG.Sconti;
 using LFG.Web.Pages.Sconti;
 using LFG.Sconti;
@@ -269,9 +277,7 @@ public partial class CategoriaToLookupDtoGuidMapper : MapperBase<Categoria, Look
 [Mapper]
 public partial class ProdottoDtoToProdottoUpdateViewModelMapper : MapperBase<ProdottoDto, ProdottoUpdateViewModel>
 {
-    [MapperIgnoreTarget(nameof(ProdottoUpdateViewModel.CollezionesIds))]
     public override partial ProdottoUpdateViewModel Map(ProdottoDto source);
-    [MapperIgnoreTarget(nameof(ProdottoUpdateViewModel.CollezionesIds))]
     public override partial void Map(ProdottoDto source, ProdottoUpdateViewModel destination);
 }
 
@@ -735,4 +741,16 @@ public partial class ImmagineVarianteCreateViewModelToImmagineVarianteCreateDto 
 {
     public override partial ImmagineVarianteCreateDto Map(ImmagineVarianteCreateViewModel source);
     public override partial void Map(ImmagineVarianteCreateViewModel source, ImmagineVarianteCreateDto destination);
+}
+
+[Mapper]
+public partial class IndirizzoToLookupDtoGuidMapper : MapperBase<Indirizzo, LookupDto<Guid>>
+{
+    public override partial LookupDto<Guid> Map(Indirizzo source);
+    public override partial void Map(Indirizzo source, LookupDto<Guid> destination);
+
+    public override void AfterMap(Indirizzo source, LookupDto<Guid> destination)
+    {
+        destination.DisplayName = source.Via;
+    }
 }

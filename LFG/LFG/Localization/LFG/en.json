@@ -217,6 +217,8 @@
     "Url": "Url",
     "MinOrdine": "Min Ordine",
     "MaxOrdine": "Max Ordine",
-    "Menu:ImmagineVarianti": "Immagine Varianti"
+    "Menu:ImmagineVarianti": "Immagine Varianti",
+    "Indirizzo": "Indirizzo",
+    "Collezione": "Collezione"
   }
 }

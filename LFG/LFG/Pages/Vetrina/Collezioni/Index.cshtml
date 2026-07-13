@@ -1,0 +1,85 @@
+@page
+@model LFG.Pages.Vetrina.Collezioni.IndexModel
+@{
+    Layout = null;
+    ViewBag.Title = "COLLEZIONI";
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+    <style>
+        .v-coll-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--gap);
+        }
+        .v-coll-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 28px 22px;
+            border: 1px solid rgba(26,26,26,0.15);
+            text-decoration: none;
+            color: var(--ink);
+            transition: opacity 0.2s, border-color 0.2s;
+        }
+        .v-coll-card:hover {
+            opacity: 0.85;
+            border-color: var(--gold);
+        }
+        .v-coll-card .v-header__badge {
+            align-self: flex-start;
+        }
+        .v-coll-card__nome {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.2rem;
+            line-height: 1.15;
+        }
+        .v-coll-card__meta {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+        }
+    </style>
+</head>
+<body class="vetrina">
+
+    <partial name="../Account/_VetrinaNavbar" />
+
+    <section class="v-shop">
+        <div class="v-container">
+            <h1 class="v-section-title">@ViewBag.Title</h1>
+
+            @if (!Model.Collezioni.Any())
+            {
+                <p class="v-empty">Nessuna collezione disponibile al momento.</p>
+            }
+            else
+            {
+                <div class="v-coll-grid">
+                    @foreach (var c in Model.Collezioni)
+                    {
+                        var isLfg = string.Equals(c.Sezione, "LFG", StringComparison.OrdinalIgnoreCase);
+                        <a class="v-coll-card" href="/Vetrina/Collezioni/Dettaglio/@c.Id">
+                            <span class="v-header__badge v-header__badge--@(isLfg ? "lfg" : "glf")">@c.Sezione</span/>
+                             <!-- immagine da aggiungere --><span >  </span>
+                            <span class="v-coll-card__nome">@c.Nome</span>
+                            <span class="v-coll-card__meta">@c.Stagione &middot; @c.Anno</span>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+</body>
+</html>

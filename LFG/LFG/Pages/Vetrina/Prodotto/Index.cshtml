@@ -83,6 +83,43 @@
         .v-popup__body { font-size: .9rem; line-height: 1.6; opacity: .8; margin-bottom: 1.5rem; }
         .v-popup__actions { display: flex; flex-wrap: wrap; gap: .6rem; }
 
+        /* ── Collezioni di appartenenza ──────────────────── */
+        .v-coll-belt {
+            padding: 2rem 0;
+            border-top: 1px solid rgba(128,128,128,.15);
+        }
+        .v-coll-belt__label {
+            display: block;
+            font-family: 'Space Mono', monospace;
+            font-size: .65rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            opacity: .5;
+            margin-bottom: .9rem;
+        }
+        .v-coll-belt__list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .6rem;
+        }
+        .v-coll-belt__item {
+            padding: 8px 16px;
+            border: 1px solid rgba(128,128,128,.3);
+            border-radius: 100px;
+            font-family: 'Space Mono', monospace;
+            font-size: .75rem;
+            text-decoration: none;
+            color: inherit;
+            transition: opacity .15s, border-color .15s;
+        }
+        .v-coll-belt__item:hover {
+            opacity: .75;
+            border-color: #c8a96e;
+        }
+        .v-coll-belt__item-meta {
+            opacity: .55;
+        }
+
         /* ── Recensioni ──────────────────────────────────── */
         .v-reviews {
             padding: 4rem 0;
@@ -336,6 +373,26 @@
 
         </div>
     </section>
+
+    @if (Model.Collezioni.Any())
+    {
+        <!-- ══════════════════════════════════════════════════════════
+             COLLEZIONI DI APPARTENENZA
+             ══════════════════════════════════════════════════════════ -->
+        <section class="v-coll-belt">
+            <div class="v-container">
+                <span class="v-coll-belt__label">Presente nelle collezioni</span>
+                <div class="v-coll-belt__list">
+                    @foreach (var c in Model.Collezioni)
+                    {
+                        <a class="v-coll-belt__item" href="/Vetrina/Collezioni/Dettaglio/@c.Id">
+                            @c.Nome <span class="v-coll-belt__item-meta">(@c.Stagione &middot; @c.Anno)</span>
+                        </a>
+                    }
+                </div>
+            </div>
+        </section>
+    }
 
     <!-- ══════════════════════════════════════════════════════════
          RECENSIONI

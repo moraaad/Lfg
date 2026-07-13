@@ -17,6 +17,8 @@ public abstract class ProdottoDtoBase : FullAuditedEntityDto<Guid>, IHasConcurre
     public string Sezione { get; set; } = null!;
     public Guid? CategoriaId { get; set; }
 
+    public Guid? CollezioneId { get; set; }
+
     public string ConcurrencyStamp { get; set; } = null!;
     public List<VarianteProdottoDto> VarianteProdotti { get; set; } = new();
 }

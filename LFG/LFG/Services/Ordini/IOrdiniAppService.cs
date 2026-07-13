@@ -16,6 +16,7 @@ public partial interface IOrdiniAppService : IApplicationService
     Task<OrdineDto> GetAsync(Guid id);
     Task<PagedResultDto<LookupDto<Guid>>> GetClienteLookupAsync(LookupRequestDto input);
     Task<PagedResultDto<LookupDto<Guid>>> GetScontoLookupAsync(LookupRequestDto input);
+    Task<PagedResultDto<LookupDto<Guid>>> GetIndirizzoLookupAsync(LookupRequestDto input);
     Task DeleteAsync(Guid id);
     Task<OrdineDto> CreateAsync(OrdineCreateDto input);
     Task<OrdineDto> UpdateAsync(Guid id, OrdineUpdateDto input);

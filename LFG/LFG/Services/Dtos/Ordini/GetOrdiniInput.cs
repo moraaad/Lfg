@@ -25,6 +25,8 @@ public abstract class GetOrdiniInputBase : PagedAndSortedResultRequestDto
 
     public Guid? ScontoId { get; set; }
 
+    public Guid? IndirizzoId { get; set; }
+
     public GetOrdiniInputBase()
     {
     }

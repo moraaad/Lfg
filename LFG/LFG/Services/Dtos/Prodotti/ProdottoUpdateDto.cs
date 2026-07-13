@@ -23,7 +23,7 @@ public abstract class ProdottoUpdateDtoBase : IHasConcurrencyStamp
     public string Sezione { get; set; } = null!;
     public Guid? CategoriaId { get; set; }
 
-    public List<Guid> CollezionesIds { get; set; }
+    public Guid? CollezioneId { get; set; }
 
     public string ConcurrencyStamp { get; set; } = null!;
 }

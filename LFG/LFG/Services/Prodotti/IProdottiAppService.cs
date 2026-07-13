@@ -15,7 +15,7 @@ public partial interface IProdottiAppService : IApplicationService
     Task<ProdottoWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id);
     Task<ProdottoDto> GetAsync(Guid id);
     Task<PagedResultDto<LookupDto<Guid>>> GetCategoriaLookupAsync(LookupRequestDto input);
-    Task<PagedResultDto<LookupDto<Guid>>> GetCollezionesLookupAsync(LookupRequestDto input);
+    Task<PagedResultDto<LookupDto<Guid>>> GetCollezioneLookupAsync(LookupRequestDto input);
     Task DeleteAsync(Guid id);
     Task<ProdottoDto> CreateAsync(ProdottoCreateDto input);
     Task<ProdottoDto> UpdateAsync(Guid id, ProdottoUpdateDto input);

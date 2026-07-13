@@ -21,5 +21,7 @@ public abstract class OrdineDtoBase : FullAuditedEntityDto<Guid>, IHasConcurrenc
 
     public Guid? ScontoId { get; set; }
 
+    public Guid? IndirizzoId { get; set; }
+
     public string ConcurrencyStamp { get; set; } = null!;
 }

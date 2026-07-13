@@ -22,4 +22,6 @@ public abstract class OrdineCreateDtoBase
     public Guid? ClienteId { get; set; }
 
     public Guid? ScontoId { get; set; }
+
+    public Guid? IndirizzoId { get; set; }
 }

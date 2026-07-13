@@ -49,6 +49,7 @@ public class LFGDbContext : AbpDbContext<LFGDbContext>
     public DbSet<Categoria> Categorie { get; set; } = null!;
     public DbSet<Book> Books { get; set; }
 
+    // IL DbSet di Prodotto collezione --> essendo una tabella di join N:M non ha bisogno di un DbSet, ma lo aggiungo per eventuali query dirette ..> lo si aggiunge manualmente per eseguire query su essa 
     public const string DbTablePrefix = "App";
     public const string DbSchema = null;
 
@@ -183,18 +184,6 @@ public class LFGDbContext : AbpDbContext<LFGDbContext>
 
         if (builder.IsHostDatabase())
         {
-            builder.Entity<Prodotto>(b => {
-                b.ToTable(DbTablePrefix + "Prodotti", DbSchema);
-                b.ConfigureByConvention();
-                b.Property(x => x.Nome).HasColumnName(nameof(Prodotto.Nome)).IsRequired().HasMaxLength(ProdottoConsts.NomeMaxLength);
-                b.Property(x => x.Descrizione).HasColumnName(nameof(Prodotto.Descrizione)).HasMaxLength(ProdottoConsts.DescrizioneMaxLength);
-                b.Property(x => x.Prezzo).HasColumnName(nameof(Prodotto.Prezzo)).IsRequired();
-                b.Property(x => x.CodiceSku).HasColumnName(nameof(Prodotto.CodiceSku)).HasMaxLength(ProdottoConsts.CodiceSkuMaxLength);
-                b.Property(x => x.Sezione).HasColumnName(nameof(Prodotto.Sezione)).IsRequired().HasMaxLength(ProdottoConsts.SezioneMaxLength);
-                b.HasOne<Categoria>().WithMany().HasForeignKey(x => x.CategoriaId).OnDelete(DeleteBehavior.SetNull);
-                b.HasMany(x => x.VarianteProdotti).WithOne().HasForeignKey(x => x.ProdottoId).IsRequired().OnDelete(DeleteBehavior.Cascade);
-                b.HasMany(x => x.Colleziones).WithOne().HasForeignKey(x => x.ProdottoId).IsRequired().OnDelete(DeleteBehavior.NoAction);
-            });
             builder.Entity<ProdottoColleziones>(b => {
                 b.ToTable(DbTablePrefix + "ProdottoColleziones", DbSchema);
                 b.ConfigureByConvention();
@@ -207,17 +196,6 @@ public class LFGDbContext : AbpDbContext<LFGDbContext>
 
         if (builder.IsHostDatabase())
         {
-            builder.Entity<Ordine>(b => {
-                b.ToTable(DbTablePrefix + "Ordini", DbSchema);
-                b.ConfigureByConvention();
-                b.Property(x => x.DataOrdine).HasColumnName(nameof(Ordine.DataOrdine));
-                b.Property(x => x.Stato).HasColumnName(nameof(Ordine.Stato)).HasMaxLength(OrdineConsts.StatoMaxLength);
-                b.Property(x => x.ImportoTotale).HasColumnName(nameof(Ordine.ImportoTotale));
-                b.Property(x => x.IndSpedizione).HasColumnName(nameof(Ordine.IndSpedizione)).HasMaxLength(OrdineConsts.IndSpedizioneMaxLength);
-                b.Property(x => x.MetodoPagamento).HasColumnName(nameof(Ordine.MetodoPagamento)).HasMaxLength(OrdineConsts.MetodoPagamentoMaxLength);
-                b.HasOne<Cliente>().WithMany().HasForeignKey(x => x.ClienteId).OnDelete(DeleteBehavior.SetNull);
-                b.HasOne<Sconto>().WithMany().HasForeignKey(x => x.ScontoId).OnDelete(DeleteBehavior.SetNull);
-            });
         }
 
         if (builder.IsHostDatabase())
@@ -307,6 +285,42 @@ public class LFGDbContext : AbpDbContext<LFGDbContext>
                 b.Property(x => x.ValidoDal).HasColumnName(nameof(Sconto.ValidoDal));
                 b.Property(x => x.ValidoAl).HasColumnName(nameof(Sconto.ValidoAl));
                 b.Property(x => x.Sezione).HasColumnName(nameof(Sconto.Sezione)).IsRequired().HasMaxLength(ScontoConsts.SezioneMaxLength);
+            });
+        }
+
+        if (builder.IsHostDatabase())
+        {
+        }
+
+        if (builder.IsHostDatabase())
+        {
+            builder.Entity<Ordine>(b => {
+                b.ToTable(DbTablePrefix + "Ordini", DbSchema);
+                b.ConfigureByConvention();
+                b.Property(x => x.DataOrdine).HasColumnName(nameof(Ordine.DataOrdine));
+                b.Property(x => x.Stato).HasColumnName(nameof(Ordine.Stato)).HasMaxLength(OrdineConsts.StatoMaxLength);
+                b.Property(x => x.ImportoTotale).HasColumnName(nameof(Ordine.ImportoTotale));
+                b.Property(x => x.IndSpedizione).HasColumnName(nameof(Ordine.IndSpedizione)).HasMaxLength(OrdineConsts.IndSpedizioneMaxLength);
+                b.Property(x => x.MetodoPagamento).HasColumnName(nameof(Ordine.MetodoPagamento)).HasMaxLength(OrdineConsts.MetodoPagamentoMaxLength);
+                b.HasOne<Cliente>().WithMany().HasForeignKey(x => x.ClienteId).OnDelete(DeleteBehavior.SetNull);
+                b.HasOne<Sconto>().WithMany().HasForeignKey(x => x.ScontoId).OnDelete(DeleteBehavior.SetNull);
+                b.HasOne<Indirizzo>().WithMany().HasForeignKey(x => x.IndirizzoId).OnDelete(DeleteBehavior.SetNull);
+            });
+        }
+
+        if (builder.IsHostDatabase())
+        {
+            builder.Entity<Prodotto>(b => {
+                b.ToTable(DbTablePrefix + "Prodotti", DbSchema);
+                b.ConfigureByConvention();
+                b.Property(x => x.Nome).HasColumnName(nameof(Prodotto.Nome)).IsRequired().HasMaxLength(ProdottoConsts.NomeMaxLength);
+                b.Property(x => x.Descrizione).HasColumnName(nameof(Prodotto.Descrizione)).HasMaxLength(ProdottoConsts.DescrizioneMaxLength);
+                b.Property(x => x.Prezzo).HasColumnName(nameof(Prodotto.Prezzo)).IsRequired();
+                b.Property(x => x.CodiceSku).HasColumnName(nameof(Prodotto.CodiceSku)).HasMaxLength(ProdottoConsts.CodiceSkuMaxLength);
+                b.Property(x => x.Sezione).HasColumnName(nameof(Prodotto.Sezione)).IsRequired().HasMaxLength(ProdottoConsts.SezioneMaxLength);
+                b.HasOne<Categoria>().WithMany().HasForeignKey(x => x.CategoriaId).OnDelete(DeleteBehavior.SetNull);
+                b.HasOne<Collezione>().WithMany().HasForeignKey(x => x.CollezioneId).OnDelete(DeleteBehavior.SetNull);
+                b.HasMany(x => x.VarianteProdotti).WithOne().HasForeignKey(x => x.ProdottoId).IsRequired().OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

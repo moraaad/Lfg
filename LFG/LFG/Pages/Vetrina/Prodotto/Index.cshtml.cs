@@ -17,6 +17,8 @@ using LFG.ElementoListe;
 using LFG.Ordini;
 using LFG.RigaOrdini;
 using LFG.Helpers;
+using LFG.Collezioni;
+using Volo.Abp.Timing;
 
 namespace LFG.Pages.Vetrina.Prodotto;
 
@@ -32,6 +34,9 @@ public class IndexModel : PageModel
     private readonly IRepository<ElementoLista, Guid> _elementoListaRepo;
     private readonly IRepository<Ordine, Guid> _ordineRepo;
     private readonly IRepository<RigaOrdine, Guid> _rigaOrdineRepo;
+    private readonly IRepository<LFG.Prodotti.ProdottoColleziones> _prodottoColleezioniRepo;
+    private readonly IRepository<Collezione, Guid> _collezioneRepo;
+    private readonly IClock _clock;
 
     public IndexModel(
         IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo,
@@ -42,7 +47,10 @@ public class IndexModel : PageModel
         IRepository<ListaDesideri, Guid> listaDesideriRepo,
         IRepository<ElementoLista, Guid> elementoListaRepo,
         IRepository<Ordine, Guid> ordineRepo,
-        IRepository<RigaOrdine, Guid> rigaOrdineRepo)
+        IRepository<RigaOrdine, Guid> rigaOrdineRepo,
+        IRepository<LFG.Prodotti.ProdottoColleziones> prodottoColleezioniRepo,
+        IRepository<Collezione, Guid> collezioneRepo,
+        IClock clock)
     {
         _prodottoRepo     = prodottoRepo;
         _varianteRepo     = varianteRepo;
@@ -53,6 +61,9 @@ public class IndexModel : PageModel
         _elementoListaRepo = elementoListaRepo;
         _ordineRepo       = ordineRepo;
         _rigaOrdineRepo   = rigaOrdineRepo;
+        _prodottoColleezioniRepo = prodottoColleezioniRepo;
+        _collezioneRepo   = collezioneRepo;
+        _clock            = clock;
     }
 
     // ── Dati prodotto ────────────────────────────────────────────
@@ -70,6 +81,11 @@ public class IndexModel : PageModel
         int QtaMagazzino, string UrlImmagine, List<string> Immagini);
 
     public List<VarianteVista> Varianti { get; set; } = new();
+
+    // ── Collezioni di appartenenza ────────────────────────────────
+    public record CollezioneVista(Guid Id, string Nome, string Stagione, int Anno);
+
+    public List<CollezioneVista> Collezioni { get; set; } = new();
 
     // ── Recensioni ───────────────────────────────────────────────
     public record RecensioneVista(
@@ -145,7 +161,7 @@ public class IndexModel : PageModel
                 clienteId: cliente.Id,
                 prodottoId: id,
                 valutazione: Valutazione,
-                dataRecensione: DateTime.UtcNow,
+                dataRecensione: _clock.Now,
                 commento: Commento),
             autoSave: true);
 
@@ -183,7 +199,7 @@ public class IndexModel : PageModel
         var lista = await _listaDesideriRepo.FirstOrDefaultAsync(l => l.ClienteId == cliente.Id);
         if (lista == null)
         {
-            lista = new ListaDesideri(Guid.NewGuid(), cliente.Id, DateTime.UtcNow, "Preferiti");
+            lista = new ListaDesideri(Guid.NewGuid(), cliente.Id, _clock.Now, "Preferiti");
             await _listaDesideriRepo.InsertAsync(lista, autoSave: true);
         }
 
@@ -201,7 +217,7 @@ public class IndexModel : PageModel
         {
             var varianteId = variantiProdotto.OrderBy(v => v.CreationTime).First().Id;
             await _elementoListaRepo.InsertAsync(
-                new ElementoLista(Guid.NewGuid(), varianteId, lista.Id, DateTime.UtcNow),
+                new ElementoLista(Guid.NewGuid(), varianteId, lista.Id, _clock.Now),
                 autoSave: true);
             MessaggioConferma = "Prodotto aggiunto ai preferiti.";
         }
@@ -238,7 +254,7 @@ public class IndexModel : PageModel
             o => o.ClienteId == cliente.Id && o.Stato == "Bozza");
         if (ordine == null)
         {
-            ordine = new Ordine(Guid.NewGuid(), cliente.Id, null, DateTime.UtcNow, 0m, "Bozza");
+            ordine = new Ordine(Guid.NewGuid(), cliente.Id, null, null, _clock.Now, 0m, "Bozza");
             await _ordineRepo.InsertAsync(ordine, autoSave: true);
         }
 
@@ -253,8 +269,16 @@ public class IndexModel : PageModel
         }
         else
         {
+            var prezzoUnitario = PrezzoHelper.Parse(prodotto.Prezzo);
+            if (prezzoUnitario < RigaOrdineConsts.PrezzoUnitarioMinLength || prezzoUnitario > RigaOrdineConsts.PrezzoUnitarioMaxLength)
+            {
+                MessaggioErrore = "Questo prodotto non può essere aggiunto al carrello: prezzo non valido.";
+                await CaricaDatiAsync(id, prodotto);
+                return Page();
+            }
+
             await _rigaOrdineRepo.InsertAsync(
-                new RigaOrdine(Guid.NewGuid(), ordine.Id, variante.Id, 1, PrezzoHelper.Parse(prodotto.Prezzo)),
+                new RigaOrdine(Guid.NewGuid(), ordine.Id, variante.Id, 1, prezzoUnitario),
                 autoSave: true);
         }
 
@@ -324,6 +348,8 @@ public class IndexModel : PageModel
                 {
                     InWishlist = await _elementoListaRepo.AnyAsync(
                         e => e.ListaDesideriId == lista.Id && variantiIds.Contains(e.VarianteProdottoId));
+                    // provare a fare un toggle della wishlist senza ricaricare la pagina potrebbe essere un miglioramento futuro       
+
                 }
             }
         }
@@ -344,5 +370,15 @@ public class IndexModel : PageModel
             Stato = StatoRecensione.HaGiaRecensito;
         else
             Stato = StatoRecensione.PuoRecensire;
+
+        // Collezioni di appartenenza — Ponte N:M: Prodotto -> Collezione_Prodotto -> Collezione
+        var link = await _prodottoColleezioniRepo.GetListAsync(pc => pc.ProdottoId == id);
+        var collezioneIds = link.Select(pc => pc.CollezioneId).ToList();
+
+        Collezioni = collezioneIds.Any()
+            ? (await _collezioneRepo.GetListAsync(c => collezioneIds.Contains(c.Id)))
+                .Select(c => new CollezioneVista(c.Id, c.Nome, c.Stagione, c.Anno.Year))
+                .ToList()
+            : new List<CollezioneVista>();
     }
 }

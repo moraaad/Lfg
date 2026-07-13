@@ -12,5 +12,5 @@ public static class RigaOrdineConsts
     public const int QuantitaMinLength = 1;
     public const int QuantitaMaxLength = 300;
     public const decimal PrezzoUnitarioMinLength = 1;
-    public const decimal PrezzoUnitarioMaxLength = 10000;
+    public const decimal PrezzoUnitarioMaxLength = 1000000;
 }

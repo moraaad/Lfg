@@ -26,6 +26,8 @@ public abstract class OrdineExcelDownloadDtoBase
 
     public Guid? ScontoId { get; set; }
 
+    public Guid? IndirizzoId { get; set; }
+
     public OrdineExcelDownloadDtoBase()
     {
     }

@@ -1,4 +1,5 @@
 using LFG.Categorie;
+using LFG.Collezioni;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ public abstract class ProdottoBase : FullAuditedAggregateRoot<Guid>
 
     public Guid? CategoriaId { get; set; }
 
-    public ICollection<ProdottoColleziones> Colleziones { get; protected set; }
+    public Guid? CollezioneId { get; set; }
 
     public ICollection<VarianteProdotto> VarianteProdotti { get; protected set; } = new Collection<VarianteProdotto>();
 
@@ -39,7 +40,7 @@ public abstract class ProdottoBase : FullAuditedAggregateRoot<Guid>
     {
     }
 
-    public ProdottoBase(Guid id, Guid? categoriaId, string nome, string prezzo, string sezione, string? descrizione = null, string? codiceSku = null)
+    public ProdottoBase(Guid id, Guid? categoriaId, Guid? collezioneId, string nome, string prezzo, string sezione, string? descrizione = null, string? codiceSku = null)
     {
         Id = id;
         Check.NotNull(nome, nameof(nome));
@@ -55,44 +56,6 @@ public abstract class ProdottoBase : FullAuditedAggregateRoot<Guid>
         Descrizione = descrizione;
         CodiceSku = codiceSku;
         CategoriaId = categoriaId;
-        Colleziones = new Collection<ProdottoColleziones>();
-    }
-
-    public virtual void AddToColleziones(Guid collezioneId)
-    {
-        Check.NotNull(collezioneId, nameof(collezioneId));
-        if (IsInColleziones(collezioneId))
-        {
-            return;
-        }
-
-        Colleziones.Add(new ProdottoColleziones(Id, collezioneId));
-    }
-
-    public virtual void RemoveFromColleziones(Guid collezioneId)
-    {
-        Check.NotNull(collezioneId, nameof(collezioneId));
-        if (!IsInColleziones(collezioneId))
-        {
-            return;
-        }
-
-        Colleziones.RemoveAll(x => x.CollezioneId == collezioneId);
-    }
-
-    public virtual void RemoveAllCollezionesExceptGivenIds(List<Guid> collezioneIds)
-    {
-        Check.NotNullOrEmpty(collezioneIds, nameof(collezioneIds));
-        Colleziones.RemoveAll(x => !collezioneIds.Contains(x.CollezioneId));
-    }
-
-    public virtual void RemoveAllColleziones()
-    {
-        Colleziones.RemoveAll(x => x.ProdottoId == Id);
-    }
-
-    private bool IsInColleziones(Guid collezioneId)
-    {
-        return Colleziones.Any(x => x.CollezioneId == collezioneId);
+        CollezioneId = collezioneId;
     }
 }

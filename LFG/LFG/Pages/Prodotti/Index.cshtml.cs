@@ -28,6 +28,10 @@ public abstract class IndexModelBase : AbpPageModel
     public Guid? CategoriaIdFilter { get; set; }
 
     public List<SelectListItem> CategoriaLookupList { get; set; } = new List<SelectListItem> { new SelectListItem(string.Empty, "") };
+    [SelectItems(nameof(CollezioneLookupList))]
+    public Guid? CollezioneIdFilter { get; set; }
+
+    public List<SelectListItem> CollezioneLookupList { get; set; } = new List<SelectListItem> { new SelectListItem(string.Empty, "") };
 
     protected IProdottiAppService _prodottiAppService;
 
@@ -39,6 +43,7 @@ public abstract class IndexModelBase : AbpPageModel
     public virtual async Task OnGetAsync()
     {
         CategoriaLookupList.AddRange((await _prodottiAppService.GetCategoriaLookupAsync(new LookupRequestDto { MaxResultCount = LimitedResultRequestDto.MaxMaxResultCount })).Items.Select(t => new SelectListItem(t.DisplayName, t.Id.ToString())).ToList());
+        CollezioneLookupList.AddRange((await _prodottiAppService.GetCollezioneLookupAsync(new LookupRequestDto { MaxResultCount = LimitedResultRequestDto.MaxMaxResultCount })).Items.Select(t => new SelectListItem(t.DisplayName, t.Id.ToString())).ToList());
         await Task.CompletedTask;
     }
 }

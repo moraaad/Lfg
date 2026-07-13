@@ -43,7 +43,7 @@ $(function () {
             codiceSku: $('#CodiceSkuFilter').val(),
             sezione: $('#SezioneFilter').val(),
             categoriaId: $('#CategoriaIdFilter').val(),
-            collezionesId: $('#CollezionesFilter').val(),
+            collezioneId: $('#CollezioneIdFilter').val(),
         };
     };
 
@@ -83,6 +83,11 @@ $(function () {
         { data: 'prodotto.sezione' },
         {
             data: 'categoria.nome',
+
+            defaultContent: '',
+        },
+        {
+            data: 'collezione.nome',
 
             defaultContent: '',
         },
@@ -308,7 +313,7 @@ $(function () {
                     { name: 'codiceSku', value: input.codiceSku },
                     { name: 'sezione', value: input.sezione },
                     { name: 'categoriaId', value: input.categoriaId },
-                    { name: 'collezionesId', value: input.collezionesId },
+                    { name: 'collezioneId', value: input.collezioneId },
                 ]);
 
             var downloadWindow = window.open(url, '_blank');
@@ -336,24 +341,6 @@ $(function () {
         dataTable.ajax.reloadEx();
         selectOrUnselectAllCheckboxes(false);
         showOrHideContextMenu();
-    });
-
-    $('#CollezionesFilter').select2({
-        ajax: {
-            url: abp.appPath + 'api/app/prodotti/colleziones-lookup',
-            type: 'GET',
-            data: function (params) {
-                return { filter: params.term, maxResultCount: 10 };
-            },
-            processResults: function (data) {
-                var mappedItems = _.map(data.items, function (item) {
-                    return { id: item.id, text: item.displayName };
-                });
-                mappedItems.unshift({ id: '', text: ' - ' });
-
-                return { results: mappedItems };
-            },
-        },
     });
 
     $('#ProdottiTable').on('click', 'td.details-control', function () {
@@ -419,12 +406,6 @@ $(function () {
             modalClass: 'varianteProdottoEdit',
         });
 
-        var varianteProdottoImmaginiModal = new abp.ModalManager({
-            viewUrl: abp.appPath + 'VarianteProdotti/ImmaginiModal',
-            scriptUrl: abp.appPath + 'Pages/VarianteProdotti/immaginiModal.js',
-            modalClass: 'varianteProdottoImmagini',
-        });
-
         var varianteProdottoDataTable = $('#VarianteProdottiTable-' + prodottoId).DataTable(
             abp.libs.datatables.normalizeConfiguration({
                 processing: true,
@@ -468,15 +449,6 @@ $(function () {
                                             });
                                     },
                                 },
-                                {
-                                    text: 'Gestisci immagini',
-                                    visible: abp.auth.isGranted('LFG.ImmagineVarianti'),
-                                    action: function (data) {
-                                        varianteProdottoImmaginiModal.open({
-                                            varianteProdottoId: data.record.id,
-                                        });
-                                    },
-                                },
                             ],
                         },
                         width: '1rem',
@@ -484,16 +456,7 @@ $(function () {
                     { data: 'taglia', width: '0.1rem' },
                     { data: 'colore', width: '0.1rem' },
                     { data: 'materiale', width: '0.1rem' },
-                    {
-                        data: 'urlImmagine',
-                        width: '0.1rem',
-                        render: function (data) {
-                            if (!data) {
-                                return '';
-                            }
-                            return '<img src="' + data + '" alt="img" style="height:45px; border-radius:4px;" onerror="this.style.display=\'none\'" />';
-                        }
-                    },
+                    { data: 'urlImmagine', width: '0.1rem' },
                     { data: 'qtaMagazzino', width: '0.1rem' },
                 ],
             })

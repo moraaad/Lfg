@@ -1,4 +1,3 @@
-using LFG.Collezioni;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,15 +13,13 @@ namespace LFG.Prodotti;
 public abstract class ProdottoManagerBase : DomainService
 {
     protected IProdottoRepository _prodottoRepository;
-    protected IRepository<Collezione, Guid> _collezioneRepository;
 
-    public ProdottoManagerBase(IProdottoRepository prodottoRepository, IRepository<Collezione, Guid> collezioneRepository)
+    public ProdottoManagerBase(IProdottoRepository prodottoRepository)
     {
         _prodottoRepository = prodottoRepository;
-        _collezioneRepository = collezioneRepository;
     }
 
-    public virtual async Task<Prodotto> CreateAsync(List<Guid> collezionesIds, Guid? categoriaId, string nome, string prezzo, string sezione, string? descrizione = null, string? codiceSku = null)
+    public virtual async Task<Prodotto> CreateAsync(Guid? categoriaId, Guid? collezioneId, string nome, string prezzo, string sezione, string? descrizione = null, string? codiceSku = null)
     {
         Check.NotNullOrWhiteSpace(nome, nameof(nome));
         Check.Length(nome, nameof(nome), ProdottoConsts.NomeMaxLength, ProdottoConsts.NomeMinLength);
@@ -31,12 +28,11 @@ public abstract class ProdottoManagerBase : DomainService
         Check.Length(sezione, nameof(sezione), ProdottoConsts.SezioneMaxLength, ProdottoConsts.SezioneMinLength);
         Check.Length(descrizione, nameof(descrizione), ProdottoConsts.DescrizioneMaxLength);
         Check.Length(codiceSku, nameof(codiceSku), ProdottoConsts.CodiceSkuMaxLength);
-        var prodotto = new Prodotto(GuidGenerator.Create(), categoriaId, nome, prezzo, sezione, descrizione, codiceSku);
-        await SetCollezionesAsync(prodotto, collezionesIds);
+        var prodotto = new Prodotto(GuidGenerator.Create(), categoriaId, collezioneId, nome, prezzo, sezione, descrizione, codiceSku);
         return await _prodottoRepository.InsertAsync(prodotto);
     }
 
-    public virtual async Task<Prodotto> UpdateAsync(Guid id, List<Guid> collezionesIds, Guid? categoriaId, string nome, string prezzo, string sezione, string? descrizione = null, string? codiceSku = null, [CanBeNull] string? concurrencyStamp = null)
+    public virtual async Task<Prodotto> UpdateAsync(Guid id, Guid? categoriaId, Guid? collezioneId, string nome, string prezzo, string sezione, string? descrizione = null, string? codiceSku = null, [CanBeNull] string? concurrencyStamp = null)
     {
         Check.NotNullOrWhiteSpace(nome, nameof(nome));
         Check.Length(nome, nameof(nome), ProdottoConsts.NomeMaxLength, ProdottoConsts.NomeMinLength);
@@ -45,39 +41,20 @@ public abstract class ProdottoManagerBase : DomainService
         Check.Length(sezione, nameof(sezione), ProdottoConsts.SezioneMaxLength, ProdottoConsts.SezioneMinLength);
         Check.Length(descrizione, nameof(descrizione), ProdottoConsts.DescrizioneMaxLength);
         Check.Length(codiceSku, nameof(codiceSku), ProdottoConsts.CodiceSkuMaxLength);
-        var queryable = await _prodottoRepository.WithDetailsAsync(x => x.Colleziones);
-        var query = queryable.Where(x => x.Id == id);
-        var prodotto = await AsyncExecuter.FirstOrDefaultAsync(query);
+        var prodotto = await _prodottoRepository.GetAsync(id);
         prodotto.CategoriaId = categoriaId;
+        prodotto.CollezioneId = collezioneId;
         prodotto.Nome = nome;
         prodotto.Prezzo = prezzo;
         prodotto.Sezione = sezione;
         prodotto.Descrizione = descrizione;
         prodotto.CodiceSku = codiceSku;
-        await SetCollezionesAsync(prodotto, collezionesIds);
         prodotto.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await _prodottoRepository.UpdateAsync(prodotto);
     }
 
-    private async Task SetCollezionesAsync(Prodotto prodotto, List<Guid> collezioneIds)
+    internal async Task<Prodotto> UpdateAsync(Guid id, List<Guid> collezionesIds, Guid? categoriaId, string nome, string v, string sezione, string? descrizione, string? codiceSku, string? concurrencyStamp)
     {
-        if (collezioneIds == null || !collezioneIds.Any())
-        {
-            prodotto.RemoveAllColleziones();
-            return;
-        }
-
-        var query = (await _collezioneRepository.GetQueryableAsync()).Where(x => collezioneIds.Contains(x.Id)).Select(x => x.Id);
-        var collezioneIdsInDb = await AsyncExecuter.ToListAsync(query);
-        if (!collezioneIdsInDb.Any())
-        {
-            return;
-        }
-
-        prodotto.RemoveAllCollezionesExceptGivenIds(collezioneIdsInDb);
-        foreach (var collezioneId in collezioneIdsInDb)
-        {
-            prodotto.AddToColleziones(collezioneId);
-        }
+        throw new NotImplementedException();
     }
 }

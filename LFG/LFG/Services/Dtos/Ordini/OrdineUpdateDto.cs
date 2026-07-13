@@ -24,5 +24,7 @@ public abstract class OrdineUpdateDtoBase : IHasConcurrencyStamp
 
     public Guid? ScontoId { get; set; }
 
+    public Guid? IndirizzoId { get; set; }
+
     public string ConcurrencyStamp { get; set; } = null!;
 }

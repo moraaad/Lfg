@@ -77,16 +77,8 @@
                 <abp-select asp-for="CategoriaIdFilter" label="@L["Categoria"].Value" />
             </abp-column>
             <abp-column size="_3">
-                <div class="mb-3">
-                    <label class="form-label" id-for="CollezionesFilter">@L["Colleziones"]</label>
-                    <select id="CollezionesFilter"
-                            name="CollezionesFilter"
-                            class="form-control"
-                            style="width: 100%"
-                            data-value="">
-                    </select>
-                </div>
-            </abp-column> 
+                <abp-select asp-for="CollezioneIdFilter" label="@L["Collezione"].Value" />
+            </abp-column>
 @*//<suite-custom-code-block-5>*@
 @*//</suite-custom-code-block-5>*@
         </abp-row>
@@ -117,6 +109,7 @@
 					<th>@L["CodiceSku"]</th>
 					<th>@L["Sezione"]</th>
 					<th>@L["Categoria"]</th>
+					<th>@L["Collezione"]</th>
 @*//<suite-custom-code-block-6>*@
 @*//</suite-custom-code-block-6>*@
 				</tr>

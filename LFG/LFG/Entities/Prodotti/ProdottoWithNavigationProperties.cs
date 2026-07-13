@@ -11,5 +11,5 @@ public abstract class ProdottoWithNavigationPropertiesBase
     public Prodotto Prodotto { get; set; } = null!;
     public Categoria? Categoria { get; set; }
 
-    public List<Collezione> Colleziones { get; set; } = null!;
+    public Collezione? Collezione { get; set; }
 }

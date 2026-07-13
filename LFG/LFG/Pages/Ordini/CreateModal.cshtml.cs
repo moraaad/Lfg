@@ -18,6 +18,7 @@ public abstract class CreateModalModelBase : AbpPageModel
 
     public List<SelectListItem> ClienteLookupList { get; set; } = new List<SelectListItem> { new SelectListItem(" — ", "") };
     public List<SelectListItem> ScontoLookupList { get; set; } = new List<SelectListItem> { new SelectListItem(" — ", "") };
+    public List<SelectListItem> IndirizzoLookupList { get; set; } = new List<SelectListItem> { new SelectListItem(" — ", "") };
 
     protected IOrdiniAppService _ordiniAppService;
 
@@ -32,6 +33,7 @@ public abstract class CreateModalModelBase : AbpPageModel
         Ordine = new OrdineCreateViewModel();
         ClienteLookupList.AddRange((await _ordiniAppService.GetClienteLookupAsync(new LookupRequestDto { MaxResultCount = LimitedResultRequestDto.MaxMaxResultCount })).Items.Select(t => new SelectListItem(t.DisplayName, t.Id.ToString())).ToList());
         ScontoLookupList.AddRange((await _ordiniAppService.GetScontoLookupAsync(new LookupRequestDto { MaxResultCount = LimitedResultRequestDto.MaxMaxResultCount })).Items.Select(t => new SelectListItem(t.DisplayName, t.Id.ToString())).ToList());
+        IndirizzoLookupList.AddRange((await _ordiniAppService.GetIndirizzoLookupAsync(new LookupRequestDto { MaxResultCount = LimitedResultRequestDto.MaxMaxResultCount })).Items.Select(t => new SelectListItem(t.DisplayName, t.Id.ToString())).ToList());
         await Task.CompletedTask;
     }
 

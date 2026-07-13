@@ -46,6 +46,7 @@ $(function () {
             metodoPagamento: $('#MetodoPagamentoFilter').val(),
             clienteId: $('#ClienteIdFilter').val(),
             scontoId: $('#ScontoIdFilter').val(),
+            indirizzoId: $('#IndirizzoIdFilter').val(),
         };
     };
 
@@ -101,6 +102,11 @@ $(function () {
         },
         {
             data: 'sconto.codice',
+
+            defaultContent: '',
+        },
+        {
+            data: 'indirizzo.via',
 
             defaultContent: '',
         },
@@ -316,6 +322,7 @@ $(function () {
                     { name: 'metodoPagamento', value: input.metodoPagamento },
                     { name: 'clienteId', value: input.clienteId },
                     { name: 'scontoId', value: input.scontoId },
+                    { name: 'indirizzoId', value: input.indirizzoId },
                 ]);
 
             var downloadWindow = window.open(url, '_blank');

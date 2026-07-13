@@ -19,17 +19,17 @@ public abstract class OrdineManagerBase : DomainService
         _ordineRepository = ordineRepository;
     }
 
-    public virtual async Task<Ordine> CreateAsync(Guid? clienteId, Guid? scontoId, DateTime dataOrdine, decimal importoTotale, string? stato = null, string? indSpedizione = null, string? metodoPagamento = null)
+    public virtual async Task<Ordine> CreateAsync(Guid? clienteId, Guid? scontoId, Guid? indirizzoId, DateTime dataOrdine, decimal importoTotale, string? stato = null, string? indSpedizione = null, string? metodoPagamento = null)
     {
         Check.NotNull(dataOrdine, nameof(dataOrdine));
         Check.Length(stato, nameof(stato), OrdineConsts.StatoMaxLength);
         Check.Length(indSpedizione, nameof(indSpedizione), OrdineConsts.IndSpedizioneMaxLength);
         Check.Length(metodoPagamento, nameof(metodoPagamento), OrdineConsts.MetodoPagamentoMaxLength);
-        var ordine = new Ordine(GuidGenerator.Create(), clienteId, scontoId, dataOrdine, importoTotale, stato, indSpedizione, metodoPagamento);
+        var ordine = new Ordine(GuidGenerator.Create(), clienteId, scontoId, indirizzoId, dataOrdine, importoTotale, stato, indSpedizione, metodoPagamento);
         return await _ordineRepository.InsertAsync(ordine);
     }
 
-    public virtual async Task<Ordine> UpdateAsync(Guid id, Guid? clienteId, Guid? scontoId, DateTime dataOrdine, decimal importoTotale, string? stato = null, string? indSpedizione = null, string? metodoPagamento = null, [CanBeNull] string? concurrencyStamp = null)
+    public virtual async Task<Ordine> UpdateAsync(Guid id, Guid? clienteId, Guid? scontoId, Guid? indirizzoId, DateTime dataOrdine, decimal importoTotale, string? stato = null, string? indSpedizione = null, string? metodoPagamento = null, [CanBeNull] string? concurrencyStamp = null)
     {
         Check.NotNull(dataOrdine, nameof(dataOrdine));
         Check.Length(stato, nameof(stato), OrdineConsts.StatoMaxLength);
@@ -38,6 +38,7 @@ public abstract class OrdineManagerBase : DomainService
         var ordine = await _ordineRepository.GetAsync(id);
         ordine.ClienteId = clienteId;
         ordine.ScontoId = scontoId;
+        ordine.IndirizzoId = indirizzoId;
         ordine.DataOrdine = dataOrdine;
         ordine.ImportoTotale = importoTotale;
         ordine.Stato = stato;

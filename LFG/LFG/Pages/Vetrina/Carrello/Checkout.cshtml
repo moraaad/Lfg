@@ -2,6 +2,7 @@
 @model LFG.Pages.Vetrina.Carrello.CheckoutModel
 @using LFG.Helpers
 @using LFG.Ordini
+@using LFG.Indirizzi
 @{
     Layout = null;
     ViewBag.Title = "Checkout";
@@ -98,6 +99,56 @@
             padding-left: 1.25rem;
             font-size: .85rem;
         }
+        .v-address-list {
+            display: flex;
+            flex-direction: column;
+            gap: .6rem;
+            margin-bottom: .75rem;
+        }
+        .v-address-option {
+            display: flex;
+            align-items: flex-start;
+            gap: .6rem;
+            font-size: .88rem;
+            cursor: pointer;
+        }
+        .v-address-option input[type="radio"] {
+            margin-top: .2rem;
+            accent-color: var(--gold);
+            flex-shrink: 0;
+        }
+        .v-address-empty {
+            font-size: .85rem;
+            opacity: .7;
+            margin: 0 0 .75rem;
+        }
+        .v-address-new {
+            display: none;
+            flex-direction: column;
+            gap: .6rem;
+            padding: 1rem;
+            border: 1px solid rgba(128,128,128,.2);
+        }
+        .v-address-new.is-visible { display: flex; }
+        .v-address-new__row {
+            display: flex;
+            gap: .6rem;
+        }
+        .v-address-new input[type="text"] {
+            flex: 1 1 0;
+            min-width: 0;
+            padding: .65rem .85rem;
+            border: 1px solid rgba(128,128,128,.25);
+            background: transparent;
+            color: inherit;
+            font-family: inherit;
+            font-size: .9rem;
+            box-sizing: border-box;
+        }
+        .v-address-new input[type="text"]:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
     </style>
 </head>
 <body class="vetrina">
@@ -174,9 +225,52 @@
                 <form method="post">
                     @Html.AntiForgeryToken()
                     <div class="v-field">
-                        <label asp-for="IndSpedizione">Indirizzo di spedizione</label>
-                        <textarea asp-for="IndSpedizione" maxlength="@OrdineConsts.IndSpedizioneMaxLength" placeholder="Via, numero, città, CAP"></textarea>
-                        <span asp-validation-for="IndSpedizione"></span>
+                        <label>Indirizzo di spedizione</label>
+
+                        @if (Model.IndirizziCliente.Any())
+                        {
+                            <div class="v-address-list">
+                                @foreach (var ind in Model.IndirizziCliente)
+                                {
+                                    var valore = ind.Id.ToString();
+                                    <label class="v-address-option">
+                                        <input type="radio" name="IndirizzoOpzione" value="@valore" @(Model.IndirizzoOpzione == valore ? "checked" : "") />
+                                        <span>
+                                            @ind.Via, @ind.Cap @ind.Citta
+                                            @if (!string.IsNullOrEmpty(ind.Provincia))
+                                            {
+                                                <text> (@ind.Provincia)</text>
+                                            }
+                                            @if (!string.IsNullOrEmpty(ind.Paese))
+                                            {
+                                                <text>, @ind.Paese</text>
+                                            }
+                                        </span>
+                                    </label>
+                                }
+                                <label class="v-address-option">
+                                    <input type="radio" name="IndirizzoOpzione" value="nuovo" @(Model.IndirizzoOpzione == "nuovo" ? "checked" : "") />
+                                    <span>Aggiungi un nuovo indirizzo</span>
+                                </label>
+                            </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" name="IndirizzoOpzione" value="nuovo" />
+                            <p class="v-address-empty">Non hai ancora un indirizzo salvato: inseriscine uno.</p>
+                        }
+
+                        <div class="v-address-new @(!Model.IndirizziCliente.Any() || Model.IndirizzoOpzione == "nuovo" ? "is-visible" : "")" id="nuovoIndirizzoForm">
+                            <input type="text" name="NuovoIndirizzoVia" placeholder="Via e numero civico" maxlength="@IndirizzoConsts.ViaMaxLength" value="@Model.NuovoIndirizzoVia" />
+                            <div class="v-address-new__row">
+                                <input type="text" name="NuovoIndirizzoCap" placeholder="CAP" maxlength="@IndirizzoConsts.CapMaxLength" value="@Model.NuovoIndirizzoCap" />
+                                <input type="text" name="NuovoIndirizzoCitta" placeholder="Città" value="@Model.NuovoIndirizzoCitta" />
+                            </div>
+                            <div class="v-address-new__row">
+                                <input type="text" name="NuovoIndirizzoProvincia" placeholder="Provincia" value="@Model.NuovoIndirizzoProvincia" />
+                                <input type="text" name="NuovoIndirizzoPaese" placeholder="Paese" value="@Model.NuovoIndirizzoPaese" />
+                            </div>
+                        </div>
                     </div>
 
                     <div class="v-field">
@@ -209,6 +303,13 @@
 
             var autohide = parseInt(msg.getAttribute('data-autohide'), 10);
             if (autohide) setTimeout(nascondi, autohide);
+        });
+
+        document.querySelectorAll('input[type="radio"][name="IndirizzoOpzione"]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                var form = document.getElementById('nuovoIndirizzoForm');
+                if (form) form.classList.toggle('is-visible', radio.value === 'nuovo' && radio.checked);
+            });
         });
     </script>
 

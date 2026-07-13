@@ -210,6 +210,24 @@
       "DtoEntityName": "ScontoDto",
       "Type": "Guid",
       "IsFilterable": true
+    },
+    {
+      "EntityNameWithDuplicationNumber": "Indirizzo",
+      "EntitySetNameWithDuplicationNumber": "Indirizzos",
+      "ReferencePropertyName": "Indirizzo",
+      "UiPickType": "Dropdown",
+      "IsRequired": false,
+      "IncludeEntitiesFromModules": false,
+      "FromAbpModule": false,
+      "Name": "IndirizzoId",
+      "DisplayProperty": "Via",
+      "Namespace": "LFG.Indirizzi",
+      "EntityName": "Indirizzo",
+      "EntitySetName": "Indirizzos",
+      "DtoNamespace": "LFG.Indirizzi",
+      "DtoEntityName": "IndirizzoDto",
+      "Type": "Guid",
+      "IsFilterable": true
     }
   ],
   "NavigationConnections": [],

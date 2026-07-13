@@ -17,8 +17,6 @@
 @*//<suite-custom-code-block-1>*@
 @*//</suite-custom-code-block-1>*@
             <abp-input asp-for="Id" />
-             <abp-tabs>
-                <abp-tab title="@L["Prodotto"].Value">
                     <abp-input asp-for="Prodotto.ConcurrencyStamp" hidden="true" suppress-label="true"/>
             <abp-input asp-for="Prodotto.Nome"    />
             <abp-input asp-for="Prodotto.Descrizione"    />
@@ -26,48 +24,9 @@
             <abp-input asp-for="Prodotto.CodiceSku"    />
             <abp-input asp-for="Prodotto.Sezione"    />
                                 <abp-select asp-for="Prodotto.CategoriaId" asp-items="Model.CategoriaLookupList" label="@L["Categoria"].Value"/>
-                </abp-tab>
-                                 <abp-tab title="@L["Colleziones"].Value">
-                    <div class="input-group multiple mb-3">
-                      <div class="flex-grow-1">
-                        <select id="CollezionesLookup"
-                                        name="CollezionesLookup"
-                                        class="form-control"
-                                        style="width: 100%"
-                                        data-value="">
-                        </select>
-                      </div>
-                      <abp-button button-type="Info" id="AddCollezionesButton" class="text-light">@L["Add"]</abp-button>
-                    </div>
-                    <abp-row>
-                        <abp-table style="@(Model.Colleziones.Any() ? "": "display:none")" id="CollezionesTable">
-                            <thead Theme="Dark">
-                            <tr style="text-align: center; vertical-align: middle;">
-                                <th scope="Column" style="text-align: left">@L["Nome"]</th>
-                                <th scope="Column"></th>
-                            </tr>
-                            </thead>
-                            <tbody id="CollezionesTableRows">
-                            @for (var index = 0; index < Model.Colleziones.Count; index++)
-                            {
-                                <tr style="text-align: center; vertical-align: middle;" index="@index">
-                                    <td style="display: none" name="id" display-name="@Model.Colleziones[index].Nome" index="@index">@Model.Colleziones[index].Id</td>
-                                    <td style="display: none">
-                                        <input value="@Model.Colleziones[index].Id" id="SelectedCollezionesIds[@index]" name="SelectedCollezionesIds[@index]"/>
-                                    </td>
-                                    <td style="text-align: left">@Model.Colleziones[index].Nome</td>
-                                    <td style="text-align: right">
-                                        <abp-button button-type="Danger" size="Small" class="text-light collezionesDeleteButton" index="@index"> <i class="fa fa-trash"></i> </abp-button>
-                                    </td>
-                                </tr>
-                            }
-                            </tbody>
-                        </abp-table>
-                    </abp-row>
-                </abp-tab>
+            <abp-select asp-for="Prodotto.CollezioneId" asp-items="Model.CollezioneLookupList" label="@L["Collezione"].Value"/>
 @*//<suite-custom-code-block-2>*@
 @*//</suite-custom-code-block-2>*@
-            </abp-tabs>
 @*//<suite-custom-code-block-3>*@
 @*//</suite-custom-code-block-3>*@
         </abp-modal-body>

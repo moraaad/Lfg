@@ -35,34 +35,45 @@
         </a>
         <nav class="v-nav">
             <a href="#">STUDIO</a>
-            <a href="#">COLLEZIONI</a>
+            <a href="/Vetrina/Collezioni">COLLEZIONI</a>
             <a href="/Vetrina/Shop?sezione=LFG">LFG</a>
             <a href="/Vetrina/Shop?sezione=GLF">GLF</a>
-            <a href="#">CONTATTI</a>
         </nav>
         <div class="v-header__actions">
             @if (User.Identity?.IsAuthenticated == true)
             {
+                @* Ordine da sinistra a destra: sezione, preferiti, carrello, email, logout *@
                 @if (sezioneUtente != null)
                 {
                     <span class="v-header__badge v-header__badge--@(isLfgUtente ? "lfg" : "glf")">
                         @sezioneUtente
                     </span>
                 }
+
                 <a href="/Vetrina/Preferiti" class="v-icon-btn" aria-label="Preferiti" title="Preferiti">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
                     </svg>
                 </a>
-                <a href="/Vetrina/Carrello" class="v-icon-btn v-cart-link" id="cartIconBtn" aria-label="Carrello" title="Carrello">
+
+                <a href="/Vetrina/Carrello" class="v-icon-btn" aria-label="Carrello" title="Carrello">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 7h12l1 13H5L6 7z" />
-                        <path d="M9 7a3 3 0 1 1 6 0" />
+                        <circle cx="9" cy="21" r="1" />
+                        <circle cx="20" cy="21" r="1" />
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                     </svg>
-                    <span class="v-cart-badge @(pezziCarrello > 0 ? "" : "is-hidden")" id="cartBadge">@pezziCarrello</span>
+                    @* se hai già il badge contatore del carrello, lascialo qui dentro *@
                 </a>
+
                 <a href="/Vetrina/Account" class="v-header__user">@User.Identity.Name</a>
-                <a href="/Vetrina/Account/Logout" class="v-btn v-btn--outline">ESCI &rarr;</a>
+
+                <a href="/Vetrina/Account/Logout" class="v-icon-btn" aria-label="Esci" title="Esci">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                </a>
             }
             else
             {

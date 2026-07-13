@@ -1,0 +1,72 @@
+@page "{id:guid}"
+@model LFG.Pages.Vetrina.Collezioni.DettaglioModel
+@{
+    Layout = null;
+    var isLfg = string.Equals(Model.Sezione, "LFG", System.StringComparison.OrdinalIgnoreCase);
+    ViewBag.Title = Model.Nome;
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+    <style>
+        .v-coll-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
+        .v-coll-header__meta {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+        }
+    </style>
+</head>
+<body class="vetrina @(isLfg ? "shop--lfg" : "shop--glf")">
+
+    <partial name="../Account/_VetrinaNavbar" />
+
+    <section class="v-shop">
+        <div class="v-container">
+            <div class="v-coll-header">
+                <span class="v-header__badge v-header__badge--@(isLfg ? "lfg" : "glf")">@Model.Sezione</span>
+                <h1 class="v-section-title">@Model.Nome</h1>
+                <span class="v-coll-header__meta">@Model.Stagione &middot; @Model.Anno</span>
+            </div>
+
+            @if (!Model.Prodotti.Any())
+            {
+                <p class="v-empty">Nessun prodotto in questa collezione.</p>
+            }
+            else
+            {
+                <div class="v-grid">
+                    @foreach (var p in Model.Prodotti)
+                    {
+                        <a class="v-card v-card--@(isLfg ? "lfg" : "glf")" href="/Vetrina/Prodotto/@p.Id">
+                            <div class="v-card__img-wrap">
+                                <img src="@p.UrlImmagine" alt="@p.Nome" />
+                            </div>
+                            <div class="v-card__caption">
+                                <div class="v-card__meta">
+                                    <span class="v-card__name">@p.Nome</span>
+                                    <span class="v-card__price">€ @p.Prezzo</span>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+</body>
+</html>

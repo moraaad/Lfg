@@ -43,8 +43,8 @@ public abstract class ProdottiAppServiceBase : ApplicationService
 
     public virtual async Task<PagedResultDto<ProdottoWithNavigationPropertiesDto>> GetListAsync(GetProdottiInput input)
     {
-        var totalCount = await _prodottoRepository.GetCountAsync(input.FilterText, input.Nome, input.Descrizione, input.Prezzo, input.CodiceSku, input.Sezione, input.CategoriaId, input.CollezionesId);
-        var items = await _prodottoRepository.GetListWithNavigationPropertiesAsync(input.FilterText, input.Nome, input.Descrizione, input.Prezzo, input.CodiceSku, input.Sezione, input.CategoriaId, input.CollezionesId, input.Sorting, input.MaxResultCount, input.SkipCount);
+        var totalCount = await _prodottoRepository.GetCountAsync(input.FilterText, input.Nome, input.Descrizione, input.Prezzo, input.CodiceSku, input.Sezione, input.CategoriaId, input.CollezioneId);
+        var items = await _prodottoRepository.GetListWithNavigationPropertiesAsync(input.FilterText, input.Nome, input.Descrizione, input.Prezzo, input.CodiceSku, input.Sezione, input.CategoriaId, input.CollezioneId, input.Sorting, input.MaxResultCount, input.SkipCount);
         return new PagedResultDto<ProdottoWithNavigationPropertiesDto>
         {
             TotalCount = totalCount,
@@ -74,7 +74,7 @@ public abstract class ProdottiAppServiceBase : ApplicationService
         };
     }
 
-    public virtual async Task<PagedResultDto<LookupDto<Guid>>> GetCollezionesLookupAsync(LookupRequestDto input)
+    public virtual async Task<PagedResultDto<LookupDto<Guid>>> GetCollezioneLookupAsync(LookupRequestDto input)
     {
         var query = (await _collezioneRepository.GetQueryableAsync()).WhereIf(!string.IsNullOrWhiteSpace(input.Filter), x => x.Nome != null && x.Nome.Contains(input.Filter));
         var lookupData = await query.PageBy(input.SkipCount, input.MaxResultCount).ToDynamicListAsync<LFG.Collezioni.Collezione>();
@@ -95,14 +95,14 @@ public abstract class ProdottiAppServiceBase : ApplicationService
     [Authorize(LFGPermissions.Prodotti.Create)]
     public virtual async Task<ProdottoDto> CreateAsync(ProdottoCreateDto input)
     {
-        var prodotto = await _prodottoManager.CreateAsync(input.CollezionesIds, input.CategoriaId, input.Nome, input.Prezzo, input.Sezione, input.Descrizione, input.CodiceSku);
+        var prodotto = await _prodottoManager.CreateAsync(input.CategoriaId, input.CollezioneId, input.Nome, input.Prezzo, input.Sezione, input.Descrizione, input.CodiceSku);
         return ObjectMapper.Map<Prodotto, ProdottoDto>(prodotto);
     }
 
     [Authorize(LFGPermissions.Prodotti.Edit)]
     public virtual async Task<ProdottoDto> UpdateAsync(Guid id, ProdottoUpdateDto input)
     {
-        var prodotto = await _prodottoManager.UpdateAsync(id, input.CollezionesIds, input.CategoriaId, input.Nome, input.Prezzo, input.Sezione, input.Descrizione, input.CodiceSku, input.ConcurrencyStamp);
+        var prodotto = await _prodottoManager.UpdateAsync(id, input.CategoriaId, input.CollezioneId, input.Nome, input.Prezzo, input.Sezione, input.Descrizione, input.CodiceSku, input.ConcurrencyStamp);
         return ObjectMapper.Map<Prodotto, ProdottoDto>(prodotto);
     }
 
@@ -115,8 +115,8 @@ public abstract class ProdottiAppServiceBase : ApplicationService
             throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
         }
 
-        var prodotti = await _prodottoRepository.GetListWithNavigationPropertiesAsync(input.FilterText, input.Nome, input.Descrizione, input.Prezzo, input.CodiceSku, input.Sezione, input.CategoriaId, input.CollezionesId);
-        var items = prodotti.Select(item => new { Nome = item.Prodotto.Nome, Descrizione = item.Prodotto.Descrizione, Prezzo = item.Prodotto.Prezzo, CodiceSku = item.Prodotto.CodiceSku, Sezione = item.Prodotto.Sezione, Categoria = item.Categoria?.Nome, });
+        var prodotti = await _prodottoRepository.GetListWithNavigationPropertiesAsync(input.FilterText, input.Nome, input.Descrizione, input.Prezzo, input.CodiceSku, input.Sezione, input.CategoriaId, input.CollezioneId);
+        var items = prodotti.Select(item => new { Nome = item.Prodotto.Nome, Descrizione = item.Prodotto.Descrizione, Prezzo = item.Prodotto.Prezzo, CodiceSku = item.Prodotto.CodiceSku, Sezione = item.Prodotto.Sezione, Categoria = item.Categoria?.Nome, Collezione = item.Collezione?.Nome, });
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(items);
         memoryStream.Seek(0, SeekOrigin.Begin);
@@ -132,7 +132,7 @@ public abstract class ProdottiAppServiceBase : ApplicationService
     [Authorize(LFGPermissions.Prodotti.Delete)]
     public virtual async Task DeleteAllAsync(GetProdottiInput input)
     {
-        await _prodottoRepository.DeleteAllAsync(input.FilterText, input.Nome, input.Descrizione, input.Prezzo, input.CodiceSku, input.Sezione, input.CategoriaId, input.CollezionesId);
+        await _prodottoRepository.DeleteAllAsync(input.FilterText, input.Nome, input.Descrizione, input.Prezzo, input.CodiceSku, input.Sezione, input.CategoriaId, input.CollezioneId);
     }
 
     public virtual async Task<LFG.Shared.DownloadTokenResultDto> GetDownloadTokenAsync()

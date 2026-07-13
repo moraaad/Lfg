@@ -13,6 +13,7 @@ using LFG.RigaOrdini;
 using LFG.Clienti;
 using LFG.Sconti;
 using LFG.Helpers;
+using Volo.Abp.Timing;
 
 namespace LFG.Pages.Vetrina.Carrello;
 
@@ -25,6 +26,7 @@ public class IndexModel : PageModel
     private readonly IRepository<VarianteProdotto, Guid> _varianteRepo;
     private readonly IRepository<LFG.Prodotti.Prodotto, Guid> _prodottoRepo;
     private readonly IRepository<Sconto, Guid> _scontoRepo;
+    private readonly IClock _clock;
 
     public IndexModel(
         IClientiAppService clientiAppService,
@@ -32,7 +34,8 @@ public class IndexModel : PageModel
         IRepository<RigaOrdine, Guid> rigaOrdineRepo,
         IRepository<VarianteProdotto, Guid> varianteRepo,
         IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo,
-        IRepository<Sconto, Guid> scontoRepo)
+        IRepository<Sconto, Guid> scontoRepo,
+        IClock clock)
     {
         _clientiAppService = clientiAppService;
         _ordineRepo         = ordineRepo;
@@ -40,6 +43,7 @@ public class IndexModel : PageModel
         _varianteRepo       = varianteRepo;
         _prodottoRepo       = prodottoRepo;
         _scontoRepo         = scontoRepo;
+        _clock              = clock;
     }
 
     public bool Autenticato { get; set; }
@@ -149,7 +153,7 @@ public class IndexModel : PageModel
             return Page();
         }
 
-        var (valido, errore) = await ScontoHelper.ValidaAsync(sconto, cliente.Sezione, DateTime.UtcNow, _ordineRepo);
+        var (valido, errore) = await ScontoHelper.ValidaAsync(sconto, cliente.Sezione, _clock.Now, _ordineRepo);
         if (!valido)
         {
             MessaggioErrore = errore;

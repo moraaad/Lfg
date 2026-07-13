@@ -20,7 +20,7 @@ public abstract class ProdottoExcelDownloadDtoBase
 
     public Guid? CategoriaId { get; set; }
 
-    public Guid? CollezionesId { get; set; }
+    public Guid? CollezioneId { get; set; }
 
     public ProdottoExcelDownloadDtoBase()
     {

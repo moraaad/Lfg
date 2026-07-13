@@ -192,11 +192,16 @@
       "DtoEntityName": "CategoriaDto",
       "Type": "Guid",
       "IsFilterable": true
-    }
-  ],
-  "NavigationConnections": [
+    },
     {
-      "Name": "Colleziones",
+      "EntityNameWithDuplicationNumber": "Collezione",
+      "EntitySetNameWithDuplicationNumber": "Colleziones",
+      "ReferencePropertyName": "Collezione",
+      "UiPickType": "Dropdown",
+      "IsRequired": false,
+      "IncludeEntitiesFromModules": false,
+      "FromAbpModule": false,
+      "Name": "CollezioneId",
       "DisplayProperty": "Nome",
       "Namespace": "LFG.Collezioni",
       "EntityName": "Collezione",
@@ -207,6 +212,7 @@
       "IsFilterable": true
     }
   ],
+  "NavigationConnections": [],
   "ChildEntities": [
     {
       "Id": "ac0c8ee1-6de8-4b74-b009-e0d17ffcf765",

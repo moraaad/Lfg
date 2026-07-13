@@ -12,6 +12,7 @@ using LFG.Ordini;
 using LFG.RigaOrdini;
 using LFG.Clienti;
 using LFG.Sconti;
+using LFG.Indirizzi;
 
 namespace LFG.Pages.Vetrina.Carrello;
 
@@ -24,6 +25,7 @@ public class ConfermatoModel : PageModel
     private readonly IRepository<VarianteProdotto, Guid> _varianteRepo;
     private readonly IRepository<LFG.Prodotti.Prodotto, Guid> _prodottoRepo;
     private readonly IRepository<Sconto, Guid> _scontoRepo;
+    private readonly IRepository<Indirizzo, Guid> _indirizzoRepo;
 
     public ConfermatoModel(
         IClientiAppService clientiAppService,
@@ -31,7 +33,8 @@ public class ConfermatoModel : PageModel
         IRepository<RigaOrdine, Guid> rigaOrdineRepo,
         IRepository<VarianteProdotto, Guid> varianteRepo,
         IRepository<LFG.Prodotti.Prodotto, Guid> prodottoRepo,
-        IRepository<Sconto, Guid> scontoRepo)
+        IRepository<Sconto, Guid> scontoRepo,
+        IRepository<Indirizzo, Guid> indirizzoRepo)
     {
         _clientiAppService = clientiAppService;
         _ordineRepo         = ordineRepo;
@@ -39,11 +42,12 @@ public class ConfermatoModel : PageModel
         _varianteRepo       = varianteRepo;
         _prodottoRepo       = prodottoRepo;
         _scontoRepo         = scontoRepo;
+        _indirizzoRepo      = indirizzoRepo;
     }
 
     public bool Autenticato { get; set; }
     public bool Trovato { get; set; }
-    public string? IndSpedizione { get; set; }
+    public string? IndirizzoTesto { get; set; }
     public string? MetodoPagamento { get; set; }
     public string? ScontoCodice { get; set; }
     public string? AvvisoSconto { get; set; }
@@ -75,10 +79,17 @@ public class ConfermatoModel : PageModel
             return Page();
 
         Trovato = true;
-        IndSpedizione = ordine.IndSpedizione;
         MetodoPagamento = ordine.MetodoPagamento;
         DataOrdine = ordine.DataOrdine;
         Totale = ordine.ImportoTotale;
+
+        if (ordine.IndirizzoId.HasValue)
+        {
+            var indirizzo = await _indirizzoRepo.FindAsync(ordine.IndirizzoId.Value);
+            if (indirizzo != null)
+                IndirizzoTesto = FormattaIndirizzo(indirizzo);
+        }
+        IndirizzoTesto ??= ordine.IndSpedizione ?? "Indirizzo non disponibile";
 
         if (ordine.ScontoId.HasValue)
         {
@@ -111,5 +122,17 @@ public class ConfermatoModel : PageModel
             .ToList();
 
         return Page();
+    }
+
+    private static string FormattaIndirizzo(Indirizzo indirizzo)
+    {
+        var testo = indirizzo.Via + ", " + indirizzo.Cap;
+        if (!string.IsNullOrWhiteSpace(indirizzo.Citta))
+            testo += " " + indirizzo.Citta;
+        if (!string.IsNullOrWhiteSpace(indirizzo.Provincia))
+            testo += " (" + indirizzo.Provincia + ")";
+        if (!string.IsNullOrWhiteSpace(indirizzo.Paese))
+            testo += ", " + indirizzo.Paese;
+        return testo;
     }
 }

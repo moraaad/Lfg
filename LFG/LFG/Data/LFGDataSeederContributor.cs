@@ -47,9 +47,9 @@ public class LFGDataSeedContributor : IDataSeedContributor, ITransientDependency
         IRepository<Collezione, Guid> collezioneRepo,
         IRepository<Sconto, Guid> scontoRepo,
         IRepository<Cliente, Guid> clienteRepo,
+        IRepository<Indirizzo, Guid> indirizzoRepo,
         IRepository<Prodotto, Guid> prodottoRepo,
         IRepository<VarianteProdotto, Guid> varianteRepo,
-        IRepository<Indirizzo, Guid> indirizzoRepo,
         IRepository<ListaDesideri, Guid> listaRepo,
         IRepository<Ordine, Guid> ordineRepo,
         IRepository<Pagamento, Guid> pagamentoRepo,
@@ -62,6 +62,7 @@ public class LFGDataSeedContributor : IDataSeedContributor, ITransientDependency
         _collezioneRepo = collezioneRepo;
         _scontoRepo = scontoRepo;
         _clienteRepo = clienteRepo;
+        _indirizzoRepo = indirizzoRepo;
         _prodottoRepo = prodottoRepo;
         _varianteRepo = varianteRepo;
         _indirizzoRepo = indirizzoRepo;
@@ -136,7 +137,20 @@ public class LFGDataSeedContributor : IDataSeedContributor, ITransientDependency
                 "LFG",
                 "T-shirt nera con doppio logo LFG",
                 "LFG-TS-001"
-                       
+
+            ), autoSave: true);
+
+        // 7. INDIRIZZO (FK -> Cliente) - aggiunto come variabile per l'ordine
+
+        var IndirizzoId = await _indirizzoRepo.InsertAsync(
+            new Indirizzo(_guidGenerator.Create(),
+                cliente.Id,
+                "Via Roma 1",
+                "20100",
+                "Italia",
+                "Milano",
+                "MI"
+
             ), autoSave: true);
 
         // 5. VARIANTE_PRODOTTO (FK -> Prodotto)
@@ -152,7 +166,7 @@ public class LFGDataSeedContributor : IDataSeedContributor, ITransientDependency
 
             ), autoSave: true);
 
-        // 8. INDIRIZZO (FK -> Cliente)
+        /*// 8. INDIRIZZO (FK -> Cliente)
         await _indirizzoRepo.InsertAsync(
             new Indirizzo(_guidGenerator.Create(),
 
@@ -164,6 +178,7 @@ public class LFGDataSeedContributor : IDataSeedContributor, ITransientDependency
                 "MI"
                 
             ), autoSave: true);
+        */
 
         // 9. LISTA_DESIDERI (FK -> Cliente)
         var lista = await _listaRepo.InsertAsync(
@@ -181,6 +196,7 @@ public class LFGDataSeedContributor : IDataSeedContributor, ITransientDependency
 
                 cliente.Id,
                 sconto.Id,
+                IndirizzoId.Id,
                 DateTime.Now,
                 49.90m,
                 "In lavorazione",

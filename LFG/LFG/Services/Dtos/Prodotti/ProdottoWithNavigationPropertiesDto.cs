@@ -11,5 +11,5 @@ public abstract class ProdottoWithNavigationPropertiesDtoBase
     public ProdottoDto Prodotto { get; set; } = null!;
     public CategoriaDto? Categoria { get; set; }
 
-    public List<CollezioneDto> Colleziones { get; set; } = new List<CollezioneDto>();
+    public CollezioneDto? Collezione { get; set; }
 }
