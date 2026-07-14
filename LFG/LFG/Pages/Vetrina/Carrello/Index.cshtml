@@ -16,6 +16,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+    <script src="~/js/vetrina-reveal.js" asp-append-version="true" defer></script>
     <style>
         .v-cart {
             padding-top: calc(var(--header-h) + 48px);
@@ -34,12 +35,14 @@
             gap: 1.25rem;
             padding-bottom: 1.25rem;
             border-bottom: 1px solid rgba(128,128,128,.15);
+            transition: background var(--transition-base);
         }
         .v-cart-row__img {
             width: 84px;
             height: 84px;
             object-fit: cover;
             flex-shrink: 0;
+            border-radius: var(--radius-sm);
         }
         .v-cart-row__info {
             flex: 1 1 auto;
@@ -71,10 +74,16 @@
             width: 56px;
             padding: .4rem .5rem;
             border: 1px solid rgba(128,128,128,.25);
+            border-radius: var(--radius-sm);
             background: transparent;
             color: inherit;
             font-family: inherit;
             text-align: center;
+            transition: border-color var(--transition-fast);
+        }
+        .v-cart-row__qty input[type="number"]:focus {
+            outline: none;
+            border-color: var(--gold);
         }
         .v-cart-row__subtotale {
             font-weight: 700;
@@ -89,8 +98,9 @@
             font-size: 1.1rem;
             line-height: 1;
             color: inherit;
+            transition: opacity var(--transition-fast), transform var(--transition-fast);
         }
-        .v-cart-row__remove:hover { opacity: 1; }
+        .v-cart-row__remove:hover { opacity: 1; transform: scale(1.15); }
         .v-cart-summary {
             display: flex;
             justify-content: flex-end;
@@ -126,10 +136,16 @@
             max-width: 260px;
             padding: .65rem .85rem;
             border: 1px solid rgba(128,128,128,.25);
+            border-radius: var(--radius-sm);
             background: transparent;
             color: inherit;
             font-family: inherit;
             font-size: .9rem;
+            transition: border-color var(--transition-fast);
+        }
+        .v-cart-coupon input[type="text"]:focus {
+            outline: none;
+            border-color: var(--gold);
         }
         .v-cart-summary--sub {
             font-size: .85rem;

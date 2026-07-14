@@ -20,6 +20,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/vetrina.css" asp-append-version="true" />
+    <script src="~/js/vetrina-reveal.js" asp-append-version="true" defer></script>
     <style>
         /* ── Galleria immagini variante ──────────────────── */
         .v-thumbs {
@@ -35,9 +36,10 @@
             cursor: pointer;
             opacity: .6;
             border: 2px solid transparent;
-            transition: opacity .15s, border-color .15s;
+            border-radius: var(--radius-sm);
+            transition: opacity var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
         }
-        .v-thumb:hover { opacity: .9; }
+        .v-thumb:hover { opacity: .9; transform: translateY(-2px); }
         .v-thumb.is-active {
             opacity: 1;
             border-color: #c8a96e;
@@ -64,12 +66,16 @@
             width: calc(100% - 2rem);
             padding: 2.5rem 2rem 2rem;
             position: relative;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            animation: v-fade-up 0.3s var(--ease) both;
         }
         .shop--lfg .v-popup { background: #111; color: #f5f5f5; }
         .v-popup__close {
             position: absolute; top: 1rem; right: 1rem;
             background: none; border: none; cursor: pointer;
             font-size: 1.2rem; line-height: 1; color: inherit; opacity: .55;
+            transition: opacity var(--transition-fast);
         }
         .v-popup__close:hover { opacity: 1; }
         .v-popup__eyebrow {
@@ -110,11 +116,12 @@
             font-size: .75rem;
             text-decoration: none;
             color: inherit;
-            transition: opacity .15s, border-color .15s;
+            transition: opacity var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
         }
         .v-coll-belt__item:hover {
             opacity: .75;
             border-color: #c8a96e;
+            transform: translateY(-2px);
         }
         .v-coll-belt__item-meta {
             opacity: .55;
@@ -148,6 +155,7 @@
         /* Form */
         .v-review-form {
             border: 1px solid rgba(128,128,128,.2);
+            border-radius: var(--radius-md);
             padding: 1.75rem 1.5rem;
             margin-bottom: 2.5rem;
         }
@@ -183,6 +191,7 @@
             min-height: 90px;
             padding: .75rem;
             border: 1px solid rgba(128,128,128,.25);
+            border-radius: var(--radius-sm);
             background: transparent;
             color: inherit;
             font-family: inherit;
@@ -190,13 +199,16 @@
             resize: vertical;
             box-sizing: border-box;
             margin-bottom: 1rem;
+            transition: border-color var(--transition-fast);
         }
-        .v-review-form textarea:focus { outline: none; border-color: currentColor; }
+        .v-review-form textarea:focus { outline: none; border-color: #c8a96e; }
         /* Cards recensione */
         .v-review-list { display: flex; flex-direction: column; gap: 1.25rem; }
         .v-review {
             padding: 1.25rem 1.5rem;
             border-left: 3px solid rgba(128,128,128,.15);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            transition: background var(--transition-base);
         }
         .v-review.is-mine {
             border-left-color: #c8a96e;
@@ -242,6 +254,7 @@
         .v-review-done {
             padding: 1rem 1.5rem;
             border: 1px solid rgba(200,169,110,.3);
+            border-radius: var(--radius-md);
             margin-bottom: 2.5rem;
             font-size: .85rem;
             opacity: .75;

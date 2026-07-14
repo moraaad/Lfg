@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(powershell -Command \"Get-Content -Path '_figma_reference\\\\src\\\\app\\\\components\\\\FeaturedProducts.tsx' -Raw\")"
+      "Bash(powershell -Command \"Get-Content -Path '_figma_reference\\\\src\\\\app\\\\components\\\\FeaturedProducts.tsx' -Raw\")",
+      "Bash(node -e ' *)",
+      "Bash(dotnet build *)"
     ]
   }
 }
