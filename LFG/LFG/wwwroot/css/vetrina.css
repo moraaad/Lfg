@@ -222,10 +222,11 @@
 .v-logo {
     display: flex;
     flex-direction: column;
-    gap: 2px;
     text-decoration: none;
     color: var(--ink);
     flex-shrink: 0;
+    text-align: center;
+    
 }
 
 .v-logo__name {
@@ -235,6 +236,7 @@
     letter-spacing: 0.02em;
     line-height: 1;
     color: var(--ink);
+    margin-bottom: 10px;
 }
 
 .v-logo__tagline {
@@ -500,7 +502,9 @@
 }
 
 .v-brand--lfg .v-brand__name { color: #ffffff; }
-.v-brand--glf .v-brand__name { color: var(--ink); }
+.v-brand--glf .v-brand__name {
+    color: var(--glf-name);
+}
 
 .v-brand__desc {
     font-family: var(--font-mono);
@@ -834,6 +838,10 @@
     background: var(--dark-bg);
     color: var(--dark-fg);
     padding-block: var(--space-2xl);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
 }
 
 .v-footer__inner {
@@ -854,6 +862,8 @@
     font-size: 1.3rem;
     color: var(--dark-fg);
     letter-spacing: 0.02em;
+    text-align:center;
+    
 }
 
 .v-footer__tagline {
@@ -863,6 +873,8 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--gold);
+    margin-top: 10px;
+    display:contents;
 }
 
 .v-footer__desc {
