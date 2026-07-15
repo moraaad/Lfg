@@ -119,7 +119,7 @@ public abstract class ClientiAppServiceBase : ApplicationService
     }
 
     [AllowAnonymous]
-    public async Task<string?> GetSezioneCorrenteAsync()
+    public async Task<string?> GetSezioneCorrenteAsync() // metodo che ritorna la sezione del cliente loggato, oppure null se non loggato
     {
         var userId = _currentUser.Id;
         if (userId == null)
